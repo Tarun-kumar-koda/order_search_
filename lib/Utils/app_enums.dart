@@ -1,0 +1,2 @@
+
+enum Orientations { PORTRAIT, LANDSCAPE }
