@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:order_search/Utils/logger.dart';
 import 'dart:developer' as dev;
 
 import 'package:order_search/Utils/network_util.dart';
@@ -82,6 +84,7 @@ class WareHouseHomeController extends GetxController {
             itemDetailsResp.error!.length > 0) {
           Utils.showAlertDialog(res.data["errors"][0]);
         }
+        Logger.logMessenger(msgTitle: "order search response",msgBody: {"data":jsonEncode(res.data)});
       } else if (res.statusCode == 401) {
         getRefreshTokenCustomerInfo(val);
       } else if (res.data["errors"] != null) {

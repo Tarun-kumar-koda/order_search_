@@ -540,7 +540,6 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
   }
 
   Widget _getListWidgets(ScannedCustomerDetails ordersModel, int index, BuildContext context) {
-    dev.log('order model in home screen ${ordersModel.toJson()}');
     return Column(
       children: [
         Container(

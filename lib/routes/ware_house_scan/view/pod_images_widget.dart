@@ -26,7 +26,9 @@ class _PodImagesWidgetState extends BaseRoute<PodImagesWidget> {
 
   @override
   void initState() {
-    imagePickerController = Get.put(ImagePickerController(orderDetails: widget.orderDetails));
+    // imagePickerController = Get.put(ImagePickerController(orderDetails: widget.orderDetails));
+    imagePickerController =  ImagePickerController(orderDetails: widget.orderDetails);
+imagePickerController.onInit();
     super.initState();
   }
 
@@ -206,6 +208,7 @@ class _PodImagesWidgetState extends BaseRoute<PodImagesWidget> {
         onTap: () {
           setState(() {
             imagePickerController.insertImageIntoDb();
+            print("deleting for ordeNumber: ${imagePickerController.orderDetails.orderNumber}");
             widget.parentKey.currentState!.setState(() {});
           });
         },
@@ -338,6 +341,7 @@ class _PodImagesWidgetState extends BaseRoute<PodImagesWidget> {
                   onPressed: () {
                     setState(() {
                       imagePickerController.delete(index);
+                      print("deleting for ordeNumber: ${imagePickerController.orderDetails.orderNumber}");
                       widget.parentKey.currentState!.setState(() {});
                     });
                   },

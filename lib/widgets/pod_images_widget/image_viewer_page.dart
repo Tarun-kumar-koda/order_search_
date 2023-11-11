@@ -44,7 +44,7 @@ class _ImageViewerState extends BaseRoute<ImageViewer> {
   void initState() {
     super.initState();
     isAvailable = (!Utils.isEmpty(widget.path) || !Utils.isEmpty(widget.url)).obs;
-    // imagePickerController = Get.put(ImagePickerController(orderDetailsController: widget.stopOrder?.orderId ?? ""));
+    // imagePickerController = Get.put(ImagePickerController(orderDetailsController: widget.stopOrder?.orderId ?? "", orderDetails: null));
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.black26, // status bar color
     ));
@@ -94,19 +94,19 @@ class _ImageViewerState extends BaseRoute<ImageViewer> {
                 isAvailable.isTrue
                     ? Container(
                   padding: EdgeInsets.only(right: getMediaQueryWidth(context, 0.03)),
-                        width: getMediaQueryWidth(context, 0.3),
+                        width: getMediaQueryWidth(context, 0.4),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            if(widget.isPageEditable) IconButton(
-                              onPressed: () {
-
-                              },
-                              icon: Icon(
-                                Icons.delete,
-                                color: Colors.white,
-                              ),
-                            ),
+                            // if(widget.isPageEditable) IconButton(
+                            //   onPressed: () {
+                            //     // imagePickerController!.delete(index);
+                            //   },
+                            //   icon: Icon(
+                            //     Icons.delete,
+                            //     color: Colors.white,
+                            //   ),
+                            // ),
                             SizedBox(
                               width: getMediaQueryWidth(context, 0.02),
                             ),
@@ -144,7 +144,7 @@ class _ImageViewerState extends BaseRoute<ImageViewer> {
       body: Stack(
         children: [
           Obx(() => getImage()),
-          if(widget.isPageEditable) getEditorButton(),
+          // if(widget.isPageEditable) getEditorButton(),
           getAppBar2(),
         ],
       ),
