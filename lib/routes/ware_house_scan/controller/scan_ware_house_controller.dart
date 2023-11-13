@@ -71,9 +71,10 @@ class WareHouseHomeController extends GetxController {
 
   Future getOrderData(String val, String whId) async {
     Utils.showLoadingDialog();
-    dev.log('inside getOrderData ${val} ');
+    dev.log('inside getOrderData ${val} && warehouseId: ${whId}');
     accessToken = await sessionManager.getAccessToken();
-    var orgId = await sessionManager.getOrgIds();
+    // var orgId = "";
+    var orgId = (await sessionManager.getOrgIds()).firstOrNull;
     dev.log(
         'inside getOrderData org id & access token is ${orgId} ${accessToken} ');
     refreshToken = await this.sessionManager.getRefreshToken();
@@ -87,7 +88,7 @@ class WareHouseHomeController extends GetxController {
           "operation_code":"COI",
           "stats_only":"false",
           "current_role":"admin",
-          "org_id": await this.sessionManager.getOrgIds(),
+          "org_id": orgId,
           "warehouse_ids": whId,
           // "warehouse_ids":"602f69efc54be6404b724796",
           "customer_order_number": val

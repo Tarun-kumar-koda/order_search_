@@ -9,7 +9,7 @@ import 'services/session_manager.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  Env.setEnv(ENV_CONSTANTS.BETA);
+  Env.setEnv(ENV_CONSTANTS.PROD);
   SharedPrefs().init();
   // FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
   runApp(MyApp());

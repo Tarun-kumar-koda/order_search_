@@ -135,6 +135,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
       child: Column(
         children: [
           Form(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             key: homeController.formKey,
             child: Column(
               children: [
@@ -167,7 +168,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                     hint: SizedBox(
                       width: getMediaQueryWidth(context, 0.5),
                       child: const Text(
-                        'Choose An Exception Message',
+                        'choose a warehouse',
                         style: TextStyle(color: Colors.grey, fontSize: 14, overflow: TextOverflow.fade),
                       ),
                     ),
@@ -359,7 +360,8 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                                   RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
                               backgroundColor: MaterialStateProperty.all<Color>(Colors.indigo)),
                           onPressed: () async {
-                            if (homeController.selectFilterController.text.length > 0 && homeController.formKey.currentState!.validate()) {
+                            if(homeController.formKey.currentState!.validate()){
+                            if (homeController.selectFilterController.text.length > 0) {
                               FocusScope.of(context).requestFocus(new FocusNode());
                               Utils.checkNetworkStatus().then((value) {
                                 if (value) {
@@ -377,6 +379,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                                   Utils.showAlertDialog(AppConstant.networkNotConnected);
                                 }
                               });
+                            }
                             }
                           },
                           child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
