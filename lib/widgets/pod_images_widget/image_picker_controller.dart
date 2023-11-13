@@ -11,6 +11,7 @@ import '../../Utils/utils.dart';
 import '../../constant/api_constant.dart';
 import '../../constant/app_constant.dart';
 import '../../entity/scanned_customer_details.dart';
+import '../../model/global_search_order.dart';
 import '../../my_app.dart';
 import 'file_manager.dart';
 import 'package:dio/dio.dart' as dio;
@@ -25,7 +26,7 @@ class ImagePickerController extends GetxController with AppData {
 
   late Rx<OrderPicture?> pictureObj;
 
-  late ScannedCustomerDetails orderDetails;
+  late Order orderDetails;
 
   ImagePickerController({required this.orderDetails});
 
@@ -39,7 +40,7 @@ class ImagePickerController extends GetxController with AppData {
   void fetch() async {
     imagesList.value.clear();
     pictureObj =
-        (sessionManager.realm.query<OrderPicture>("orderNumber == '${orderDetails.orderNumber}'").firstOrNull).obs;
+        (sessionManager.realm.query<OrderPicture>("orderNumber == '${orderDetails.customerOrderNumber ?? ""}'").firstOrNull).obs;
     if (pictureObj.value != null) imagesList.value.add(pictureObj.value!.localPath!);
     imagesList.refresh();
   }
@@ -62,7 +63,7 @@ class ImagePickerController extends GetxController with AppData {
     try {
       if (path == '' || path == null) return;
       sessionManager.realm.write(() {
-        sessionManager.realm.add<OrderPicture>(OrderPicture(ObjectId().toString(), orderDetails.orderNumber!, false,
+        sessionManager.realm.add<OrderPicture>(OrderPicture(ObjectId().toString(), orderDetails.customerOrderNumber ?? "", false,
             localPath: path,
             ackId: Object().toString(),
             capturedAt: DateTime.now().toUtc().toString(),
@@ -189,13 +190,14 @@ class ImagePickerController extends GetxController with AppData {
       dio.MultipartFile multipartFile = await dio.MultipartFile.fromFile(path, filename: fileName);
       filesList.add(multipartFile);
       dio.FormData data = dio.FormData.fromMap({
-        "pictures[][refer_id]": orderDetails.orderNumber,
+        "pictures[][refer_id]": orderDetails.id ?? "",
         "pictures[]item_pictures[][organization_id]": (await sessionManager.getOrgIds()).first,
-        "exception_code": "",
-        "exception_message": "",
-        "comments": "",
         "refer": "order",
-        "pictures[]item_pictures[][ack_id]": fileName
+        "pictures[]item_pictures[][ack_id]": fileName,
+        "location_id": orderDetails.csLocationId ?? "",
+        "pictures[]item_pictures[][picture_type]": "normal",
+        "pictures[]item_pictures[][pic_title]": "POD",
+        "pictures[]item_pictures[][pic_code]": "POD",
       });
 
       data.files.addAll(filesList.map((e) => MapEntry("pictures[]item_pictures[][picture_obj]", e)));

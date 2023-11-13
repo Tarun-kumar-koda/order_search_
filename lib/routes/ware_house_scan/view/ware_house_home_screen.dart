@@ -15,6 +15,7 @@ import 'package:order_search/routes/base_route.dart';
 import 'package:order_search/routes/ware_house_scan/view/pod_images_widget.dart';
 import 'package:order_search/services/session_manager.dart';
 import 'package:order_search/widgets/toolbar/toolbar_view.dart';
+import '../../../model/global_search_order.dart';
 import '../../../realm/order_picture.dart';
 import '../../../widgets/pod_images_widget/image_picker_controller.dart';
 import '../controller/scan_ware_house_controller.dart';
@@ -218,7 +219,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                               shape: MaterialStateProperty.all(
                                   RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
                               backgroundColor:
-                                  MaterialStateProperty.all<Color>(Utils.hexColor(AppColor.appPrimaryColor))),
+                                  MaterialStateProperty.all<Color>(Colors.indigo)),
                           onPressed: () async {
                             if (homeController.selectFilterController.text.length > 0) {
                               FocusScope.of(context).requestFocus(new FocusNode());
@@ -242,7 +243,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                           child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
                             Text(
                               "Search",
-                              style: TextStyle(color: Colors.white, fontSize: getMediaQueryWidth(context, 0.04)),
+                              style: TextStyle(color: Colors.white, fontSize: getMediaQueryWidth(context, 0.05)),
                             )
                           ]))),
                 ],
@@ -535,11 +536,11 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
 
   Widget _openScanner() {
     return Container(
-      child: Text(""),
+      child: Text("No Records Found"),
     );
   }
 
-  Widget _getListWidgets(ScannedCustomerDetails ordersModel, int index, BuildContext context) {
+  Widget _getListWidgets(CustomerOrders ordersModel, int index, BuildContext context) {
     return Column(
       children: [
         Container(
@@ -575,7 +576,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                                       children: [
                                         Container(
                                           child: Text(
-                                            "#${Utils.getTextValue(ordersModel.orderNumber)}",
+                                            "#${Utils.getTextValue(ordersModel.order?.customerOrderNumber ?? "")}",
                                             overflow: TextOverflow.ellipsis,
                                             maxLines: 1,
                                             softWrap: false,
@@ -596,29 +597,6 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                                   ))
                             ],
                           ),
-                          homeController.currentStatus == "Others"
-                              ? Row(
-                                  children: [
-                                    Container(
-                                      margin: EdgeInsets.only(right: 20),
-                                      alignment: Alignment.center,
-                                      padding: EdgeInsets.all(5),
-                                      decoration: BoxDecoration(
-                                          color: Colors.black12,
-                                          borderRadius: BorderRadius.circular(5),
-                                          border: Border.all(
-                                            color: Utils.hexColor(AppColor.appPrimaryColor),
-                                            width: 1,
-                                          )),
-                                      child: Text(ordersModel.status ?? "",
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: getMediaQueryWidth(context, 0.028))),
-                                    ),
-                                  ],
-                                )
-                              : Container()
                         ],
                       ),
                     ),
@@ -628,7 +606,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                     ),
                     Container(
                       padding: EdgeInsets.zero,
-                      child: tableView(ordersModel, index, context),
+                      child: tableView(ordersModel.order!, index, context),
                     ),
                   ],
                 ),
@@ -638,9 +616,9 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
     );
   }
 
-  Widget tableView(ScannedCustomerDetails ordersModel, int index, BuildContext context) {
+  Widget tableView(Order ordersModel, int index, BuildContext context) {
     OrderPicture? pictureObj;
-    pictureObj = sessionManager.realm.query<OrderPicture>("orderNumber == '${ordersModel.orderNumber}'").firstOrNull;
+    pictureObj = sessionManager.realm.query<OrderPicture>("orderNumber == '${ordersModel.customerOrderNumber ?? ""}'").firstOrNull;
 
     return Container(
       decoration: BoxDecoration(

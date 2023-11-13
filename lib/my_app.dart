@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+//import 'package:google_fonts/google_fonts.dart';
 import 'package:order_search/bindings/binding_controller.dart';
 import 'package:order_search/constant/app_constant.dart';
 import 'package:order_search/constant/db_constant.dart';

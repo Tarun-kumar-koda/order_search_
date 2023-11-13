@@ -8,11 +8,12 @@ import 'package:order_search/widgets/pod_images_widget/image_viewer_page.dart';
 import '../../../Utils/utils.dart';
 import '../../../constant/app_constant.dart';
 import '../../../entity/scanned_customer_details.dart';
+import '../../../model/global_search_order.dart';
 import '../../../widgets/pod_images_widget/image_picker_controller.dart';
 import '../../base_route.dart';
 
 class PodImagesWidget extends StatefulWidget {
-  final ScannedCustomerDetails orderDetails;
+  final Order orderDetails;
   final GlobalKey parentKey;
 
   const PodImagesWidget({super.key, required this.orderDetails, required this.parentKey});
@@ -157,6 +158,7 @@ imagePickerController.onInit();
                         onPressed: imagePickerController.pictureObj.value != null &&
                                 !imagePickerController.pictureObj.value!.isOnlineSync
                             ? () async {
+                          Utils.showLoadingDialog();
                                 if (await imagePickerController.updatePicturesApi(imagePickerController.pictureObj.value!)) {
                                   setState(() {
                                     imagePickerController.sessionManager.realm.write(() {
@@ -164,9 +166,9 @@ imagePickerController.onInit();
                                     });
                                   });
 
-                                  Utils.showToastMessage(context: context, "uploaded successfully");
+                                  Utils.hideLoadingDialog();
+                                  Utils.showToastMessage(context: context, "Uploaded Successfully");
                                 }
-                                Utils.showToastMessage(context: context, "failed");
                                 imagePickerController.pictureObj.refresh();
                               }
                             : null,
@@ -208,7 +210,6 @@ imagePickerController.onInit();
         onTap: () {
           setState(() {
             imagePickerController.insertImageIntoDb();
-            print("deleting for ordeNumber: ${imagePickerController.orderDetails.orderNumber}");
             widget.parentKey.currentState!.setState(() {});
           });
         },
@@ -341,11 +342,10 @@ imagePickerController.onInit();
                   onPressed: () {
                     setState(() {
                       imagePickerController.delete(index);
-                      print("deleting for ordeNumber: ${imagePickerController.orderDetails.orderNumber}");
                       widget.parentKey.currentState!.setState(() {});
                     });
                   },
-                  icon: Icon(Icons.delete, color: Colors.red, size: 22),
+                  icon: Icon(Icons.delete, color: Colors.red.shade300, size: 22),
                 ),
               ),
             ),

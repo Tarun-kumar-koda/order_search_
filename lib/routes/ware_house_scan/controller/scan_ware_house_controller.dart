@@ -13,9 +13,10 @@ import 'package:order_search/Utils/utils.dart';
 import 'package:order_search/constant/api_constant.dart';
 import 'package:order_search/constant/app_constant.dart';
 import 'package:order_search/entity/parent_responce.dart';
-import 'package:order_search/entity/scanned_customer_details.dart';
 import 'package:order_search/realm/order_picture.dart';
 import 'package:order_search/services/session_manager.dart';
+
+import '../../../model/global_search_order.dart';
 
 class WareHouseHomeController extends GetxController {
   NetworkUtil networkUtil = NetworkUtil();
@@ -26,7 +27,7 @@ class WareHouseHomeController extends GetxController {
 
   var userId, accessToken, refreshToken;
   var message = "".obs;
-  var orderList = <ScannedCustomerDetails>[].obs;
+  var orderList = <CustomerOrders>[].obs;
   var parentRes = ParentResp().obs;
   var currentWarehouseName = "".obs;
   var isCameraPermissionGranted = false.obs;
@@ -67,22 +68,27 @@ class WareHouseHomeController extends GetxController {
         'inside getOrderData org id & access token is ${orgId} ${accessToken} ');
     refreshToken = await this.sessionManager.getRefreshToken();
     var res = await networkUtil.getDio(
-        ApiConstant.endPoint.CUSTOMER_INFO, "GET_ORDER_DETAILS",
+        ApiConstant.endPoint.GLOBAL_SEARCH_ORDER, "GET_ORDER_DETAILS",
         body: {
-          "search_value": val,
-          "org_id": orgId.first,
+          "global_search":true,
+          "page":1,
+          "per_page":40,
+          "status":"",
+          "operation_code":"COI",
+          "stats_only":"false",
+          "current_role":"admin",
+          "org_id": await this.sessionManager.getOrgIds(),
+          "warehouse_ids":"602f69efc54be6404b724796",
+          "customer_order_number": val
         },
         headers: ApiConstant().getHeaders(accessToken));
     Utils.hideLoadingDialog();
     if (res != null) {
       if (res.statusCode == 200) {
-        ParentResp itemDetailsResp = ParentResp.fromJson(res.data);
-        if (itemDetailsResp.scannedCustomerDetails != null &&
-            itemDetailsResp.scannedCustomerDetails!.length > 0) {
-          orderList.value = itemDetailsResp.scannedCustomerDetails!;
-        } else if (itemDetailsResp.error != null &&
-            itemDetailsResp.error!.length > 0) {
-          Utils.showAlertDialog(res.data["errors"][0]);
+        GlobalSearchBaseResponse globalSearchBaseResponse = GlobalSearchBaseResponse.fromJson(res.data);
+        if (globalSearchBaseResponse.customerOrders != null &&
+            globalSearchBaseResponse.customerOrders!.length > 0) {
+          orderList.value = globalSearchBaseResponse.customerOrders!;
         }
         Logger.logMessenger(msgTitle: "order search response",msgBody: {"data":jsonEncode(res.data)});
       } else if (res.statusCode == 401) {

@@ -48,7 +48,7 @@ class EndPoint {
   final String UPDATE_ORDER_ITEMS = "api/v2/nav_routes/update_order_items";
   final String UPLOAD_ORDER_ITEM_PHOTOS = "/api/v2/nav_routes/add_stop_order_pictures";
 
-  final String UPLOAD_WAREHOUSE_PICTURES = "api/v2/order_wh_pictures/upload_order_wh_pictures";
+  final String UPLOAD_WAREHOUSE_PICTURES = "/api/v2/nav_routes/add_stop_order_pictures";
 
   final String GET_SURVEY_DETAILS = "api/v2/questions?survey_id={id}";
   final String POST_SURVEY_ANSWERS = "survey_responses";
@@ -90,6 +90,8 @@ class EndPoint {
   final String UPDATE_ORDER_ITEM_STATUS = "/api/v2/warehouse_items/update_order_item_status";
   final String ORDER_COUNT = "api/v2/customer_orders/filtered_order_stats";
   final String UPDATE_ORDER_STATUS = "api/v2/customer_orders/update_orders_status";
+
+  final String GLOBAL_SEARCH_ORDER = "api/v2/customer_orders/order_listing_details";
 }
 
 class Param {

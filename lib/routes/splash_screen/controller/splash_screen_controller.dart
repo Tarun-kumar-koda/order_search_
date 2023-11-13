@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:get/get.dart';
 import 'package:order_search/Utils/network_util.dart';
 import 'package:order_search/constant/app_constant.dart';
+import 'package:order_search/services/session_manager.dart';
 
 import '../../base_route.dart';
 
@@ -18,27 +19,21 @@ class SplashScreenController extends GetxController with AppData {
   void onInit() {
     super.onInit();
     getData();
-    test();
-  }
-
-  test(){
-
   }
 
   Future getData() async {
     routeId = await sessionManager.getRouteId();
     accessToken = await sessionManager.getAccessToken();
-    // enterToApp();
-    pageNavigator();
-
-    print(routeId);
-    print(accessToken);
+    enterToApp();
   }
 
 
   Future<bool> isUserLoggedIn() async {
-    if(await sessionManager.getAccessToken() != "") return true;
+    if(await SessionManager().getInstance().getAccessToken() != ""){
+      return true;
+    }else{
       return false;
+    }
   }
 
   Future<bool> isRouteRunning() async {
@@ -46,12 +41,19 @@ class SplashScreenController extends GetxController with AppData {
     return false;
   }
 
+  enterToApp() async {
+    var _duration = new Duration(seconds: 1);
+    return new Timer(_duration, pageNavigator);
+  }
+
   Future<void> pageNavigator() async {
     if (await isUserLoggedIn()) {
       Get.offAllNamed(AppLinks.searchOrderView);
       return;
+    }else{
+      Get.offAllNamed(AppLinks.loginNamedRoute);
+      return;
     }
-    Get.offAllNamed(AppLinks.loginNamedRoute);
   }
 
 }
