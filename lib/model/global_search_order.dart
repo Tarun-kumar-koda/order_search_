@@ -25,8 +25,7 @@ class GlobalSearchBaseResponse {
 
 class CustomerOrders {
   List<OrderAppointments>? orderAppointments;
-  //int? quotationAmount;
-  Null? navRouteId;
+  String? navRouteId;
   Order? order;
   CsLocation? csLocation;
   WhLocation? whLocation;
@@ -35,7 +34,6 @@ class CustomerOrders {
   String? timeZoneId;
   String? timeZoneName;
   String? tzShortForm;
-  int? appointment;
 
   CustomerOrders(
       {this.orderAppointments,
@@ -48,8 +46,7 @@ class CustomerOrders {
         this.city,
         this.timeZoneId,
         this.timeZoneName,
-        this.tzShortForm,
-        this.appointment});
+        this.tzShortForm});
 
   CustomerOrders.fromJson(Map<String, dynamic> json) {
     if (json['order_appointments'] != null) {
@@ -72,7 +69,6 @@ class CustomerOrders {
     timeZoneId = json['timeZoneId'];
     timeZoneName = json['timeZoneName'];
     tzShortForm = json['tz_short_form'];
-    appointment = json['appointment'];
   }
 
   Map<String, dynamic> toJson() {
@@ -97,7 +93,6 @@ class CustomerOrders {
     data['timeZoneId'] = this.timeZoneId;
     data['timeZoneName'] = this.timeZoneName;
     data['tz_short_form'] = this.tzShortForm;
-    data['appointment'] = this.appointment;
     return data;
   }
 }
@@ -159,8 +154,6 @@ class Order {
   String? relatedOrder;
   String? createdAt;
   bool? locationPartialMatch;
-  int? weight;
-  int? quantity;
   String? rejectionMessage;
   String? hawb;
   String? mawb;
@@ -171,7 +164,6 @@ class Order {
   String? accountName;
   String? losName;
   String? warehouseCode;
-  String? references;
   String? companyName;
 
   Order(
@@ -198,8 +190,6 @@ class Order {
         this.relatedOrder,
         this.createdAt,
         this.locationPartialMatch,
-        this.weight,
-        this.quantity,
         this.rejectionMessage,
         this.hawb,
         this.mawb,
@@ -210,7 +200,6 @@ class Order {
         this.accountName,
         this.losName,
         this.warehouseCode,
-        this.references,
         this.companyName});
 
   Order.fromJson(Map<String, dynamic> json) {
@@ -238,8 +227,6 @@ class Order {
     //quotationAmount = json['quotation_amount'];
     createdAt = json['created_at'];
     locationPartialMatch = json['location_partial_match'];
-    weight = json['weight'];
-    quantity = json['quantity'];
     rejectionMessage = json['rejection_message'];
     hawb = json['hawb'];
     mawb = json['mawb'];
@@ -250,7 +237,6 @@ class Order {
     accountName = json['account_name'];
     losName = json['los_name'];
     warehouseCode = json['warehouse_code'];
-    references = json['references'];
     companyName = json['company_name'];
   }
 
@@ -280,8 +266,6 @@ class Order {
     //data['quotation_amount'] = this.quotationAmount;
     data['created_at'] = this.createdAt;
     data['location_partial_match'] = this.locationPartialMatch;
-    data['weight'] = this.weight;
-    data['quantity'] = this.quantity;
     data['rejection_message'] = this.rejectionMessage;
     data['hawb'] = this.hawb;
     data['mawb'] = this.mawb;
@@ -292,7 +276,6 @@ class Order {
     data['account_name'] = this.accountName;
     data['los_name'] = this.losName;
     data['warehouse_code'] = this.warehouseCode;
-    data['references'] = this.references;
     data['company_name'] = this.companyName;
     return data;
   }
