@@ -78,7 +78,7 @@ class NetworkUtil {
         Utils.showToastMessage("Network Error");
       }
       print(e);
-      print(stackTrace);
+      // if(e.) print(stackTrace);
       return e.response;
     }
   }

@@ -57,6 +57,7 @@ dependencies:
 #  fluttertoast: ^8.2.3
   toast: ^0.3.0
   flutter_launcher_icons: any
+  dropdown_button2: ^2.1.4
 
 flutter_icons:
   image_path: "assets/images/app_icon.png"

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,6 +13,7 @@ import 'package:order_search/entity/scanned_customer_details.dart';
 import 'package:order_search/entity/scanner_details.dart';
 import 'package:order_search/my_app.dart';
 import 'package:order_search/routes/base_route.dart';
+import 'package:order_search/routes/ware_house_scan/model/warehouse_ids.dart';
 import 'package:order_search/routes/ware_house_scan/view/pod_images_widget.dart';
 import 'package:order_search/services/session_manager.dart';
 import 'package:order_search/widgets/toolbar/toolbar_view.dart';
@@ -132,6 +134,145 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
     return Container(
       child: Column(
         children: [
+          Form(
+            key: homeController.formKey,
+            child: Column(
+              children: [
+                Container(
+                  width: getMediaQueryWidth(context, 0.9),
+                  child: DropdownButtonFormField2(
+                    disabledHint: RichText(
+                      text: const TextSpan(
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                        children: <TextSpan>[
+                          TextSpan(text: "choose An Exception Message", style: TextStyle(overflow: TextOverflow.ellipsis)),
+                        ],
+                      ),
+                    ),
+                    isDense: true,
+                    // customButton: SizedBox(height: 30,child: ElevatedButton(child: Text("press"),onPressed: (){})),
+                    value: null,
+                    enableFeedback: true,
+                    isExpanded: false,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.black)),
+                      contentPadding: EdgeInsets.symmetric(vertical: getMediaQueryWidth(context, 0.02)),
+                      errorBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.red), borderRadius: BorderRadius.circular(10)),
+                      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.indigo), borderRadius: BorderRadius.circular(10)),
+                      focusColor: Colors.indigo,
+                      isDense: true,
+                    ),
+                    barrierDismissible: true,
+                    // style: TextStyle(backgroundColor: Colors.green),
+                    hint: SizedBox(
+                      width: getMediaQueryWidth(context, 0.5),
+                      child: const Text(
+                        'Choose An Exception Message',
+                        style: TextStyle(color: Colors.grey, fontSize: 14, overflow: TextOverflow.fade),
+                      ),
+                    ),
+                    items: homeController.warehouseIds
+                        .map(
+                          (data) => DropdownMenuItem(
+                        value: data,
+                        child: data.id == null
+                            ? Container(
+                          child: RichText(
+                            text: TextSpan(
+                              style: TextStyle(fontSize: 14, color: Colors.grey),
+                              children: <TextSpan>[
+                                TextSpan(text: data.name, style: TextStyle(overflow: TextOverflow.ellipsis)),
+                              ],
+                            ),
+                          ),
+                        )
+                            : RichText(
+                              text: TextSpan(
+                                style: const TextStyle(fontSize: 14, color: Colors.black),
+                                children: <TextSpan>[
+                                  TextSpan(text: data.name, style: TextStyle(overflow: TextOverflow.ellipsis)),
+                                ],
+                              ),
+                            ),
+                      ),
+                    )
+                        .toList(),
+                    dropdownStyleData: DropdownStyleData(
+                      maxHeight: 200,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      offset: const Offset(-20, 0),
+                      scrollbarTheme: ScrollbarThemeData(
+                        radius: const Radius.circular(40),
+                        thickness: MaterialStateProperty.all<double>(6),
+                        thumbVisibility: MaterialStateProperty.all<bool>(true),
+                      ),
+                    ),
+                    menuItemStyleData: MenuItemStyleData(
+                      padding: EdgeInsets.only(left: getMediaQueryWidth(context, 0.05)),
+                    ),
+                    validator: (value) {
+                      // value = value as ExceptionMessages?;
+                      if (value?.id == null) {
+                        return 'please choose one';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      homeController.selectedWarehouse = value!;
+                      print("___${value.id}");
+                    },
+                    onSaved: (value) {},
+                    buttonStyleData: ButtonStyleData(
+                      height: getMediaQueryHeight(context, 0.05),
+                    ),
+                    iconStyleData: const IconStyleData(
+                      icon: Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black45,
+                      ),
+                      iconSize: 20,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: getMediaQueryHeight(context, 0.013),
+                ),
+                // Container(
+                //   // decoration:BoxDecoration(boxShadow:[ BoxShadow(offset: Offset(4,4),color: Colors.grey.shade200,blurRadius: 4)]),
+                //   child: TextFormField(
+                //     // keyboardType: ,
+                //     decoration: InputDecoration(
+                //       filled: true,
+                //       fillColor: Colors.grey.shade200,
+                //       hintText: "Comments",
+                //       hintStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey.shade600),
+                //       border: UnderlineInputBorder(
+                //           borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+                //           borderSide: BorderSide(color: Colors.grey.shade300)),
+                //       contentPadding:
+                //       EdgeInsets.symmetric(vertical: getMediaQueryWidth(context, 0.025), horizontal: getMediaQueryWidth(context, 0.03)),
+                //       errorBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.red), borderRadius: BorderRadius.circular(10)),
+                //       focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.indigo), borderRadius: BorderRadius.circular(10)),
+                //       focusColor: Colors.indigo,
+                //     ),
+                //     validator: (value) {
+                //       if (selectedId!.id == "CUSTOM") if (!RegExp(r"^(?!\s*$).+").hasMatch(value!))
+                //         return "please fill the required field";
+                //       return null;
+                //     },
+                //     onChanged: (newVal) {
+                //       selectedId = newVal;
+                //     },
+                //     onSaved: (value) {
+                //       comments = value;
+                //     },
+                //   ),
+                // ),
+              ],
+            ),
+          ),
           Container(
               child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -154,7 +295,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                           FocusScope.of(context).requestFocus(new FocusNode());
                           Utils.checkNetworkStatus().then((value) {
                             if (value) {
-                              homeController.getOrderData(homeController.selectFilterController.text);
+                              homeController.getOrderData(homeController.selectFilterController.text,homeController.selectedWarehouse!.id!);
                             } else {
                               Utils.showAlertDialog(AppConstant.networkNotConnected);
                             }
@@ -197,9 +338,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                         contentPadding: EdgeInsets.only(left: getMediaQueryWidth(context, 0.03)),
                       ))),
             ],
-          )
-              //child:
-              ),
+          )),
           Container(
               padding: EdgeInsets.only(top: 15),
               child: Row(
@@ -218,14 +357,14 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               shape: MaterialStateProperty.all(
                                   RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
-                              backgroundColor:
-                                  MaterialStateProperty.all<Color>(Colors.indigo)),
+                              backgroundColor: MaterialStateProperty.all<Color>(Colors.indigo)),
                           onPressed: () async {
-                            if (homeController.selectFilterController.text.length > 0) {
+                            if (homeController.selectFilterController.text.length > 0 && homeController.formKey.currentState!.validate()) {
                               FocusScope.of(context).requestFocus(new FocusNode());
                               Utils.checkNetworkStatus().then((value) {
                                 if (value) {
-                                  homeController.getOrderData(homeController.selectFilterController.text);
+                                  print("+++${homeController.selectedWarehouse?.id}");
+                                  homeController.getOrderData(homeController.selectFilterController.text,homeController.selectedWarehouse!.id!);
                                 } else {
                                   Utils.showAlertDialog(AppConstant.networkNotConnected);
                                 }
@@ -253,7 +392,9 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
           // ),
           // Tooltip(
           //     message: 'Adds Truck and Door to searched orders.',
-          //     child: _getConfigs())
+          //     child: _getConfigs()),
+
+
         ],
       ),
     );
@@ -618,7 +759,9 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
 
   Widget tableView(Order ordersModel, int index, BuildContext context) {
     OrderPicture? pictureObj;
-    pictureObj = sessionManager.realm.query<OrderPicture>("orderNumber == '${ordersModel.customerOrderNumber ?? ""}'").firstOrNull;
+    pictureObj = sessionManager.realm
+        .query<OrderPicture>("orderNumber == '${ordersModel.customerOrderNumber ?? ""}'")
+        .firstOrNull;
 
     return Container(
       decoration: BoxDecoration(

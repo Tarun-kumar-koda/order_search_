@@ -14,6 +14,7 @@ import 'package:order_search/constant/api_constant.dart';
 import 'package:order_search/constant/app_constant.dart';
 import 'package:order_search/entity/parent_responce.dart';
 import 'package:order_search/realm/order_picture.dart';
+import 'package:order_search/routes/ware_house_scan/model/warehouse_ids.dart';
 import 'package:order_search/services/session_manager.dart';
 
 import '../../../model/global_search_order.dart';
@@ -47,10 +48,19 @@ class WareHouseHomeController extends GetxController {
   var excStatusCount = "".obs;
   var othStatusCount = "".obs;
 
+  late GlobalKey<FormState> formKey;
+
+  late WarehouseId selectedWarehouse;
+
   late OrderPicture? pictureObj;
+
+  List<WarehouseId> warehouseIds = [WarehouseId(name: "choose a warehouse"),WarehouseId(name: "AUSTIN",id: "62b59902822dd6839e8ddbbf"),
+  WarehouseId(name: "SAN ANTONIO",id: "62b59998822dd6aed18ab8c5"),
+  WarehouseId(name: "QA Warehouse",id: "643feaee822dd6af9754a33d")];
 
   @override
   void onInit() {
+    formKey = GlobalKey<FormState>();
     super.onInit();
   }
 
@@ -59,7 +69,7 @@ class WareHouseHomeController extends GetxController {
     super.onReady();
   }
 
-  Future getOrderData(String val) async {
+  Future getOrderData(String val, String whId) async {
     Utils.showLoadingDialog();
     dev.log('inside getOrderData ${val} ');
     accessToken = await sessionManager.getAccessToken();
@@ -78,7 +88,8 @@ class WareHouseHomeController extends GetxController {
           "stats_only":"false",
           "current_role":"admin",
           "org_id": await this.sessionManager.getOrgIds(),
-          "warehouse_ids":"602f69efc54be6404b724796",
+          "warehouse_ids": whId,
+          // "warehouse_ids":"602f69efc54be6404b724796",
           "customer_order_number": val
         },
         headers: ApiConstant().getHeaders(accessToken));
@@ -92,7 +103,7 @@ class WareHouseHomeController extends GetxController {
         }
         Logger.logMessenger(msgTitle: "order search response",msgBody: {"data":jsonEncode(res.data)});
       } else if (res.statusCode == 401) {
-        getRefreshTokenCustomerInfo(val);
+        getRefreshTokenCustomerInfo(val,whId);
       } else if (res.data["errors"] != null) {
         var errorMessage = res.data["errors"] as List<dynamic>;
         if (errorMessage.length > 0) {
@@ -106,7 +117,7 @@ class WareHouseHomeController extends GetxController {
     // orderList.addAll([ScannedCustomerDetails(accountName: "ad",orderNumber: Random().nextInt(1000).toString()),ScannedCustomerDetails(accountName: "ad",orderNumber: Random().nextInt(1000).toString()),ScannedCustomerDetails(accountName: "ad",orderNumber: Random().nextInt(1000).toString()),ScannedCustomerDetails(accountName: "ad",orderNumber: Random().nextInt(1000).toString()),ScannedCustomerDetails(accountName: "ad",orderNumber: Random().nextInt(1000).toString()),ScannedCustomerDetails(accountName: "ad",orderNumber: Random().nextInt(1000).toString())]);
   }
 
-  getRefreshTokenCustomerInfo(String val) async {
+  getRefreshTokenCustomerInfo(String val,String whId) async {
     Utils.showLoadingDialog();
     try {
       var res = await networkUtil.postDio(
@@ -119,7 +130,7 @@ class WareHouseHomeController extends GetxController {
           sessionManager
               .setAccessToken("${"bearer"} ${res.data["access_token"]}");
           Future.delayed(Duration(seconds: 1), () {
-            getOrderData(val);
+            getOrderData(val,whId);
           });
         } else if (res.statusCode == 401) {
           sessionManager.clearPreferences();
