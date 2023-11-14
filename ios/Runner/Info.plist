@@ -47,5 +47,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+    <key>NSCameraUsageDescription</key>
+    <string>Fleet Enable allows you to capture the order's proof of delivery.</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>Fleet Enable needs access to save  your photo  in gallery.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Flee Enable needs to access your gallery to update order's proof of delivery.</string>
 </dict>
 </plist>
