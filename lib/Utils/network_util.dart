@@ -114,9 +114,9 @@ class NetworkUtil {
   }
 
   Future<Response?> updateDio(String endPoint, {required Map<String, dynamic> headers, required body}) async {
-    if (DBConstants.isOnline == false) {
-      return null;
-    }
+    // if (DBConstants.isOnline == false) {
+    //   return null;
+    // }
     dio = Dio(BaseOptions(headers: headers, contentType: 'application/json'));
     print('${ApiConstant.baseUrl}' '$endPoint');
     try {

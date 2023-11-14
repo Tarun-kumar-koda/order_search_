@@ -126,7 +126,8 @@ class Utils {
         Dialog(
           child: WillPopScope(
             onWillPop: () async {
-              return false;
+              // return false;
+              return true;
             },
             child: Container(
               // color: Colors.blue,

@@ -10,7 +10,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:order_search/bindings/binding_controller.dart';
 import 'package:order_search/constant/app_constant.dart';
 import 'package:order_search/constant/db_constant.dart';
+import 'package:order_search/realm/order_picture.dart';
 import 'package:order_search/routes/ware_house_scan/view/ware_house_home_screen.dart';
+import 'package:order_search/services/database_helper.dart';
+import 'package:order_search/services/offlinehelper.dart';
 import 'package:toast/toast.dart';
 
 import 'Utils/app_enums.dart';
@@ -33,6 +36,10 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    // OfflineHelper.startQueue();
+    // DatabaseHelper().realm.all<PicturesQueue>().first.queue.changes.listen((event) {
+    //   print("&&&${event}");
+    // });
     _connectivitySubscription = _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
   }
 

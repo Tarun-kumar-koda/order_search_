@@ -1,9 +1,12 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:order_search/realm/order_picture.dart';
 import 'package:order_search/widgets/pod_images_widget/image_viewer_page.dart';
+import 'package:order_search/widgets/toolbar/toolbar_controller.dart';
 
 import '../../../Utils/utils.dart';
 import '../../../constant/app_constant.dart';
@@ -11,10 +14,14 @@ import '../../../entity/scanned_customer_details.dart';
 import '../../../model/global_search_order.dart';
 import '../../../widgets/pod_images_widget/image_picker_controller.dart';
 import '../../base_route.dart';
+import '../controller/scan_ware_house_controller.dart';
 
 class PodImagesWidget extends StatefulWidget {
   final Order orderDetails;
   final GlobalKey parentKey;
+
+  // final PicturesQueue picturesQueue;
+
 
   const PodImagesWidget({super.key, required this.orderDetails, required this.parentKey});
 
@@ -25,11 +32,18 @@ class PodImagesWidget extends StatefulWidget {
 class _PodImagesWidgetState extends BaseRoute<PodImagesWidget> {
   late ImagePickerController imagePickerController;
 
+  ToolBarController toolBarController = Get.put(ToolBarController());
+
+  WareHouseHomeController wareHouseHomeController = Get.put(WareHouseHomeController());
+
   @override
   void initState() {
     // imagePickerController = Get.put(ImagePickerController(orderDetails: widget.orderDetails));
-    imagePickerController =  ImagePickerController(orderDetails: widget.orderDetails);
-imagePickerController.onInit();
+    imagePickerController =  ImagePickerController(orderDetails: widget.orderDetails,);
+    imagePickerController.onInit();
+    toolBarController.pictures.listen((p0) {
+      print("listener");
+    });
     super.initState();
   }
 
@@ -137,6 +151,11 @@ imagePickerController.onInit();
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // ElevatedButton(onPressed: (){
+                //   print('len');
+                //   print(imagePickerController.picturesQueue.queue.length);
+                //
+                // }, child: Text("test listener")),
                 SizedBox(
                     width: getMediaQueryWidth(context, 0.28),
                     child: ElevatedButton(
@@ -149,34 +168,24 @@ imagePickerController.onInit();
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           shape:
                               MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
-                          backgroundColor: imagePickerController.pictureObj.value != null &&
-                                  !imagePickerController.pictureObj.value!.isOnlineSync
+                          backgroundColor: !Utils.isEmpty(imagePickerController.orderDetails.localPath)
+                              && !imagePickerController.orderDetails.isOnlineSync!
                               ? MaterialStateProperty.all<Color>(Utils.hexColor(AppColor.appPrimaryColor))
                               : MaterialStateProperty.all<Color>(Colors.grey),
                           // backgroundColor:  MaterialStateProperty.all<Color>(Utils.hexColor(AppColor.appPrimaryColor)),
                         ),
-                        onPressed: imagePickerController.pictureObj.value != null &&
-                                !imagePickerController.pictureObj.value!.isOnlineSync
+                        onPressed: !Utils.isEmpty(imagePickerController.orderDetails.localPath) &&
+                                !imagePickerController.orderDetails.isOnlineSync!
                             ? () async {
-                          Utils.showLoadingDialog();
-                                if (await imagePickerController.updatePicturesApi(imagePickerController.pictureObj.value!)) {
-                                  setState(() {
-                                    imagePickerController.sessionManager.realm.write(() {
-                                      imagePickerController.pictureObj.value!.isOnlineSync = true;
-                                    });
-                                  });
-
-                                  Utils.hideLoadingDialog();
-                                  Utils.showToastMessage(context: context, "Uploaded Successfully");
-                                }
-                                imagePickerController.pictureObj.refresh();
+                          imagePickerController.uploadButtonHandler();
+                                // imagePickerController.pictureObj.refresh();
                               }
                             : null,
                         child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
                           Text(
                             "Upload",
                             style: TextStyle(color: Colors.white, fontSize: getMediaQueryWidth(context, 0.04)),
-                          )
+                          ),
                         ]))),
 
                 // ElevatedButton(onPressed: (){Utils.showToastMessage(context: context,"uploaded successfully");}, child: Text("toast"))
@@ -199,7 +208,7 @@ imagePickerController.onInit();
         boxShadow: [
           BoxShadow(
             color: Colors.grey.shade200,
-            offset: Offset(4, 4),
+            offset: const Offset(4, 4),
             blurRadius: 7,
           ),
         ],
@@ -221,12 +230,12 @@ imagePickerController.onInit();
                 Icons.add_a_photo,
                 color: Colors.grey.shade600,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               index != 1
                   ? Text(
-                      'Pic ${index}',
+                      'Pic $index',
                       style: TextStyle(
                           color: Colors.grey,
                           fontSize: getMediaQueryWidth(context, 0.035),
@@ -269,9 +278,12 @@ imagePickerController.onInit();
     //   "local": imagePickerController.imagesList.value[index].picture?.localPath,
     //   "url": imagePickerController.imagesList.value[index].picture?.url,
     // });
-    print(imagePickerController.imagesList.value.length);
+    if (kDebugMode) {
+      print(imagePickerController.imagesList.value.length);
+    }
     return GestureDetector(
       onTap: () {
+        print(imagePickerController.orderDetails.customerOrderNumber);
         Get.to(
             () => ImageViewer(
                   isPageEditable: imagePickerController.isPageEditable,
@@ -282,7 +294,7 @@ imagePickerController.onInit();
                   index: index,
                 ),
             transition: Transition.native,
-            duration: Duration(milliseconds: 200));
+            duration: const Duration(milliseconds: 200));
       },
       child: Stack(
         children: [
@@ -319,11 +331,11 @@ imagePickerController.onInit();
               ),
               padding: EdgeInsets.symmetric(horizontal: getMediaQueryWidth(context, 0.05)),
               height: 20,
-              child: imagePickerController.pictureObj.value!.isOnlineSync ? Icon(
+              child: imagePickerController.orderDetails.isOnlineSync! ? Icon(
                 Icons.cloud_done,
                 color: Colors.green.shade300,
                 size: 15,
-              ): Icon(
+              ): const Icon(
                 Icons.warning,
                 color: Colors.grey,
                 size: 15,
@@ -334,10 +346,10 @@ imagePickerController.onInit();
             Align(
               alignment: Alignment.bottomRight,
               child: Container(
-                margin: EdgeInsets.all(5),
+                margin: const EdgeInsets.all(5),
                 width: 40,
                 height: 40,
-                decoration: BoxDecoration(color: Colors.black26, shape: BoxShape.circle),
+                decoration: const BoxDecoration(color: Colors.black26, shape: BoxShape.circle),
                 child: IconButton(
                   onPressed: () {
                     setState(() {

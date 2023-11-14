@@ -10,6 +10,7 @@ class OrderPicture extends $OrderPicture
     with RealmEntity, RealmObjectBase, RealmObject {
   OrderPicture(
     String id,
+    String orderId,
     String orderNumber,
     bool isOnlineSync, {
     String? localPath,
@@ -18,8 +19,10 @@ class OrderPicture extends $OrderPicture
     String? capturedAt,
     String? imageType,
     String? picTitle,
+    String? csLocationId,
   }) {
     RealmObjectBase.set(this, 'id', id);
+    RealmObjectBase.set(this, 'orderId', orderId);
     RealmObjectBase.set(this, 'orderNumber', orderNumber);
     RealmObjectBase.set(this, 'localPath', localPath);
     RealmObjectBase.set(this, 'url', url);
@@ -28,6 +31,7 @@ class OrderPicture extends $OrderPicture
     RealmObjectBase.set(this, 'imageType', imageType);
     RealmObjectBase.set(this, 'picTitle', picTitle);
     RealmObjectBase.set(this, 'isOnlineSync', isOnlineSync);
+    RealmObjectBase.set(this, 'csLocationId', csLocationId);
   }
 
   OrderPicture._();
@@ -36,6 +40,11 @@ class OrderPicture extends $OrderPicture
   String get id => RealmObjectBase.get<String>(this, 'id') as String;
   @override
   set id(String value) => RealmObjectBase.set(this, 'id', value);
+
+  @override
+  String get orderId => RealmObjectBase.get<String>(this, 'orderId') as String;
+  @override
+  set orderId(String value) => RealmObjectBase.set(this, 'orderId', value);
 
   @override
   String get orderNumber =>
@@ -87,6 +96,13 @@ class OrderPicture extends $OrderPicture
       RealmObjectBase.set(this, 'isOnlineSync', value);
 
   @override
+  String? get csLocationId =>
+      RealmObjectBase.get<String>(this, 'csLocationId') as String?;
+  @override
+  set csLocationId(String? value) =>
+      RealmObjectBase.set(this, 'csLocationId', value);
+
+  @override
   Stream<RealmObjectChanges<OrderPicture>> get changes =>
       RealmObjectBase.getChanges<OrderPicture>(this);
 
@@ -100,6 +116,7 @@ class OrderPicture extends $OrderPicture
     return const SchemaObject(
         ObjectType.realmObject, OrderPicture, 'OrderPicture', [
       SchemaProperty('id', RealmPropertyType.string),
+      SchemaProperty('orderId', RealmPropertyType.string),
       SchemaProperty('orderNumber', RealmPropertyType.string),
       SchemaProperty('localPath', RealmPropertyType.string, optional: true),
       SchemaProperty('url', RealmPropertyType.string, optional: true),
@@ -108,6 +125,45 @@ class OrderPicture extends $OrderPicture
       SchemaProperty('imageType', RealmPropertyType.string, optional: true),
       SchemaProperty('picTitle', RealmPropertyType.string, optional: true),
       SchemaProperty('isOnlineSync', RealmPropertyType.bool),
+      SchemaProperty('csLocationId', RealmPropertyType.string, optional: true),
+    ]);
+  }
+}
+
+class PicturesQueue extends $PicturesQueue
+    with RealmEntity, RealmObjectBase, RealmObject {
+  PicturesQueue({
+    Iterable<OrderPicture> queue = const [],
+  }) {
+    RealmObjectBase.set<RealmList<OrderPicture>>(
+        this, 'queue', RealmList<OrderPicture>(queue));
+  }
+
+  PicturesQueue._();
+
+  @override
+  RealmList<OrderPicture> get queue =>
+      RealmObjectBase.get<OrderPicture>(this, 'queue')
+          as RealmList<OrderPicture>;
+  @override
+  set queue(covariant RealmList<OrderPicture> value) =>
+      throw RealmUnsupportedSetError();
+
+  @override
+  Stream<RealmObjectChanges<PicturesQueue>> get changes =>
+      RealmObjectBase.getChanges<PicturesQueue>(this);
+
+  @override
+  PicturesQueue freeze() => RealmObjectBase.freezeObject<PicturesQueue>(this);
+
+  static SchemaObject get schema => _schema ??= _initSchema();
+  static SchemaObject? _schema;
+  static SchemaObject _initSchema() {
+    RealmObjectBase.registerFactory(PicturesQueue._);
+    return const SchemaObject(
+        ObjectType.realmObject, PicturesQueue, 'PicturesQueue', [
+      SchemaProperty('queue', RealmPropertyType.object,
+          linkTarget: 'OrderPicture', collectionType: RealmCollectionType.list),
     ]);
   }
 }

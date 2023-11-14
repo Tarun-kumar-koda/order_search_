@@ -165,6 +165,8 @@ class Order {
   String? losName;
   String? warehouseCode;
   String? companyName;
+  String? localPath;
+  bool? isOnlineSync;
 
   Order(
       {this.id,
@@ -200,7 +202,8 @@ class Order {
         this.accountName,
         this.losName,
         this.warehouseCode,
-        this.companyName});
+        this.companyName,
+      this.isOnlineSync = false});
 
   Order.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -238,6 +241,7 @@ class Order {
     losName = json['los_name'];
     warehouseCode = json['warehouse_code'];
     companyName = json['company_name'];
+    isOnlineSync = false;
   }
 
   Map<String, dynamic> toJson() {

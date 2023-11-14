@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:order_search/services/database_helper.dart';
 
 import '../Utils/network_util.dart';
 import '../services/session_manager.dart';
@@ -7,6 +8,7 @@ import '../services/session_manager.dart';
 mixin AppData {
   NetworkUtil networkUtil = NetworkUtil();
   SessionManager sessionManager = SessionManager();
+  DatabaseHelper databaseHelper = DatabaseHelper();
 }
 
 class BaseRoute<T extends StatefulWidget> extends State<T> {

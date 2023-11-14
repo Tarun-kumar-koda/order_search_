@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:order_search/realm/order_picture.dart';
 import 'package:order_search/routes/base_route.dart';
+import 'package:order_search/services/offlinehelper.dart';
+import 'package:order_search/widgets/toolbar/toolbar_controller.dart';
 import 'package:realm/realm.dart';
 
 import '../../Utils/logger.dart';
@@ -24,33 +28,59 @@ class ImagePickerController extends GetxController with AppData {
 
   bool isPageEditable = true;
 
-  late Rx<OrderPicture?> pictureObj;
+  late PicturesQueue picturesQueue;
+
+  // late Rx<OrderPicture?> pictureObj;
+
+  late StreamSubscription<RealmListChanges<OrderPicture>> listen;
 
   late Order orderDetails;
+
+  ToolBarController toolBarController = Get.put(ToolBarController());
 
   ImagePickerController({required this.orderDetails});
 
   @override
   void onInit() {
+    if(databaseHelper.realm.all<PicturesQueue>().isEmpty){
+      databaseHelper.realm.write((){
+        databaseHelper.realm.add<PicturesQueue>(PicturesQueue());
+      });
+    }
+    picturesQueue = databaseHelper.realm.all<PicturesQueue>().first;
+    // picturesQueue = databaseHelper.realm.all<PicturesQueue>().first;
     fetch();
+    initiateListener();
     checkEditable();
     super.onInit();
   }
 
+  initiateListener(){
+    listen = picturesQueue.queue.changes.listen((event) {
+      print("&&&${event.list.length}");
+    });
+
+    listen.onData((data) {
+      print(data.inserted);
+    });
+  }
+
   void fetch() async {
     imagesList.value.clear();
-    pictureObj =
-        (sessionManager.realm.query<OrderPicture>("orderNumber == '${orderDetails.customerOrderNumber!}'").firstOrNull).obs;
-    if (pictureObj.value != null) imagesList.value.add(pictureObj.value!.localPath!);
+    // pictureObj = (sessionManager.realm.query<OrderPicture>("orderNumber == '${orderDetails.customerOrderNumber!}'").firstOrNull).obs;
+    // if (pictureObj.value != null) imagesList.value.add(pictureObj.value!.localPath!);
+    if(!Utils.isEmpty(orderDetails.localPath)) imagesList.value.add(orderDetails.localPath!);
     imagesList.refresh();
   }
 
   checkEditable() {}
 
   bool delete(int index) {
-    sessionManager.realm.write(() {
-      sessionManager.realm.delete<OrderPicture>(pictureObj.value!);
-    });
+    // sessionManager.realm.write(() {
+    //   sessionManager.realm.delete<OrderPicture>(pictureObj.value!);
+    // });
+    orderDetails.localPath = "";
+    orderDetails.isOnlineSync = false;
     fetch();
     return true;
   }
@@ -62,14 +92,15 @@ class ImagePickerController extends GetxController with AppData {
     String? path = temp?.path;
     try {
       if (path == '' || path == null) return;
-      sessionManager.realm.write(() {
-        sessionManager.realm.add<OrderPicture>(OrderPicture(ObjectId().toString(), orderDetails.customerOrderNumber ?? "", false,
-            localPath: path,
-            ackId: Object().toString(),
-            capturedAt: DateTime.now().toUtc().toString(),
-            imageType: "normal",
-            picTitle: "POD"));
-      });
+      // sessionManager.realm.write(() {
+      //   sessionManager.realm.add<OrderPicture>(OrderPicture(ObjectId().toString(), orderDetails.customerOrderNumber ?? "", false,
+      //       localPath: path,
+      //       ackId: Object().toString(),
+      //       capturedAt: DateTime.now().toUtc().toString(),
+      //       imageType: "normal",
+      //       picTitle: "POD"));
+      // });
+      orderDetails.localPath = path;
       fetch();
     } catch (ex) {
       print(ex);
@@ -180,11 +211,26 @@ class ImagePickerController extends GetxController with AppData {
     return mode;
   }
 
-  Future<bool> updatePicturesApi(OrderPicture picture) async {
+  bool pushImageToQueue(Order orderDetails){
+    try {
+      databaseHelper.realm.write(() {
+        OrderPicture picture = OrderPicture(orderDetails.id!,Object().toString(), orderDetails.customerOrderNumber!,false,localPath: orderDetails.localPath);
+        databaseHelper.realm.add<OrderPicture>(picture);
+        picturesQueue.queue.add(picture);
+      });
+      OfflineHelper().triggerQueue();
+      return true;
+    }catch(ex){
+      print(ex);
+      return false;
+    }
+  }
+
+  Future<bool> updatePicturesApi() async {
     late dio.Response<dynamic>? res;
     try {
       List<dio.MultipartFile> filesList = <dio.MultipartFile>[];
-      String? path = picture.localPath;
+      String? path = orderDetails.localPath;
       if (path == null || Utils.isEmpty(path)) throw Exception("ImageNotFound");
       String fileName = path.split('/').last;
       dio.MultipartFile multipartFile = await dio.MultipartFile.fromFile(path, filename: fileName);
@@ -224,5 +270,35 @@ class ImagePickerController extends GetxController with AppData {
       return false;
     }
     return false;
+  }
+
+  void uploadButtonHandler() {
+    // Utils.showLoadingDialog();
+    // Future.delayed(const Duration(seconds: 1),() {
+    //   wareHouseHomeController.orderList.removeWhere((element) => element.order!.id == widget.orderDetails.id);
+    //   wareHouseHomeController.orderList.refresh();
+    //   Utils.hideLoadingDialog();
+    // });
+    // if (await imagePickerController.updatePicturesApi()) {
+    if (pushImageToQueue(orderDetails)) {
+      // setState(() {
+      //   imagePickerController.sessionManager.realm.write(() {
+      //     imagePickerController.pictureObj.value!.isOnlineSync = true;
+      //   });
+      // });
+      // setState(() {
+        orderDetails.isOnlineSync = true;
+      // });
+        imagesList.value.clear();
+
+      toolBarController.fetch();
+
+      toolBarController.pictures.refresh();
+
+
+      // print("picturequeue: ${imagePickerController.picturesQueue.queue.length}");
+
+      // Utils.showToastMessage(context: context, "Uploaded Successfully");
+    }
   }
 }

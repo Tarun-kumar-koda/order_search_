@@ -6,6 +6,7 @@ part 'order_picture.g.dart';
 @RealmModel()
 class $OrderPicture{
   late String id;
+  late String orderId;
   late String orderNumber;
   late String? localPath;
   late String? url;
@@ -14,8 +15,10 @@ class $OrderPicture{
   late String? imageType;
   late String? picTitle;
   late bool isOnlineSync;
+  late String? csLocationId;
+}
 
-  // Picture fromJson(Map<String,dynamic> json){
-  //
-  // }
+@RealmModel()
+class $PicturesQueue{
+  late List<$OrderPicture> queue;
 }

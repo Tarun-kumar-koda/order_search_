@@ -14,12 +14,14 @@ import 'package:order_search/constant/api_constant.dart';
 import 'package:order_search/constant/app_constant.dart';
 import 'package:order_search/entity/parent_responce.dart';
 import 'package:order_search/realm/order_picture.dart';
+import 'package:order_search/routes/base_route.dart';
 import 'package:order_search/routes/ware_house_scan/model/warehouse_ids.dart';
 import 'package:order_search/services/session_manager.dart';
+import 'package:realm/realm.dart';
 
 import '../../../model/global_search_order.dart';
 
-class WareHouseHomeController extends GetxController {
+class WareHouseHomeController extends GetxController with AppData {
   NetworkUtil networkUtil = NetworkUtil();
   SessionManager sessionManager = SessionManager().getInstance();
   TextEditingController selectFilterController = TextEditingController();
@@ -33,6 +35,8 @@ class WareHouseHomeController extends GetxController {
   var currentWarehouseName = "".obs;
   var isCameraPermissionGranted = false.obs;
   var useLessCheck = true;
+
+  late PicturesQueue picturesQueue;
 
   var isConfigExpanded = false.obs;
   var configsDegree = -45.obs;
@@ -54,6 +58,8 @@ class WareHouseHomeController extends GetxController {
 
   late OrderPicture? pictureObj;
 
+  // late StreamSubscription<RealmListChanges<OrderPicture>> listen;
+
   List<WarehouseId> warehouseIds = [WarehouseId(name: "choose a warehouse"),WarehouseId(name: "AUSTIN",id: "62b59902822dd6839e8ddbbf"),
   WarehouseId(name: "SAN ANTONIO",id: "62b59998822dd6aed18ab8c5"),
   WarehouseId(name: "QA Warehouse",id: "643feaee822dd6af9754a33d")];
@@ -61,6 +67,12 @@ class WareHouseHomeController extends GetxController {
   @override
   void onInit() {
     formKey = GlobalKey<FormState>();
+    if(databaseHelper.realm.all<PicturesQueue>().isEmpty){
+      databaseHelper.realm.write((){
+        databaseHelper.realm.add<PicturesQueue>(PicturesQueue());
+      });
+    }
+    picturesQueue = databaseHelper.realm.all<PicturesQueue>().first;
     super.onInit();
   }
 
@@ -68,6 +80,16 @@ class WareHouseHomeController extends GetxController {
   void onReady() {
     super.onReady();
   }
+
+  // initiateListener(){
+  //   listen = sessionManager.realm.all<PicturesQueue>().first.queue.changes.listen((event) {
+  //     print("&&&${event.inserted}");
+  //   });
+  //
+  //   listen.onData((data) {
+  //     print(data);
+  //   });
+  // }
 
   Future getOrderData(String val, String whId) async {
     Utils.showLoadingDialog();

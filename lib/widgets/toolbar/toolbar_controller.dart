@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:order_search/Utils/utils.dart';
 import 'package:order_search/model/user_model.dart';
+import 'package:order_search/routes/base_route.dart';
 import 'package:order_search/services/session_manager.dart';
+import 'package:realm/realm.dart';
 
-class ToolBarController extends GetxController{
+import '../../realm/order_picture.dart';
+
+class ToolBarController extends GetxController with AppData{
 
   var imgUrl = "".obs;
   var profileImage;
@@ -13,10 +17,18 @@ class ToolBarController extends GetxController{
   var userModel = UserModel().obs;
   SessionManager sessionManager = SessionManager().getInstance();
 
+  late Rx<RealmList<OrderPicture>> pictures;
+
   @override
   void onInit() {
     super.onInit();
+    fetch();
     getUserObject();
+  }
+
+  fetch(){
+    pictures = databaseHelper.realm.all<PicturesQueue>().first.queue.obs;
+    pictures.refresh();
   }
 
   void getUserObject()async{

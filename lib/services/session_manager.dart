@@ -12,8 +12,9 @@ import '../constant/app_constant.dart';
 
 mixin RealmServices {
   Realm realm = Realm(Configuration.local([
-    OrderPicture.schema
-  ], schemaVersion:3));
+    OrderPicture.schema,
+    PicturesQueue.schema
+  ], schemaVersion:5));
 }
 
 class SharedPrefs {

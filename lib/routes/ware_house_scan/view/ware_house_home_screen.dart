@@ -15,6 +15,7 @@ import 'package:order_search/routes/base_route.dart';
 import 'package:order_search/routes/ware_house_scan/model/warehouse_ids.dart';
 import 'package:order_search/routes/ware_house_scan/view/pod_images_widget.dart';
 import 'package:order_search/services/session_manager.dart';
+import 'package:order_search/widgets/toolbar/toolbar_controller.dart';
 import 'package:order_search/widgets/toolbar/toolbar_view.dart';
 import '../../../model/global_search_order.dart';
 import '../../../realm/order_picture.dart';
@@ -346,6 +347,25 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // ElevatedButton(onPressed: (){
+                  //   homeController.databaseHelper.realm.write(() {
+                  //     homeController.databaseHelper.realm.deleteAll<OrderPicture>();
+                  //   });
+                  // }, child: Text("wipe db")),
+                  // ElevatedButton(onPressed: (){
+                  //   // imagePickerController.picturesQueue.queue.changes.listen((event) {
+                  //   //   print(event.inserted);
+                  //   //   print(event.deleted);
+                  //   //   print(event.modified);
+                  //   // });
+                  //   print('len');
+                  //   print(homeController.picturesQueue.queue.length);
+                  //   print(homeController.picturesQueue.queue.map((e) => [e.orderId,e.isOnlineSync]));
+                  //   // imagePickerController.databaseHelper.realm.write(() {
+                  //   //   imagePickerController.picturesQueue.queue.add(OrderPicture("asd", "asdas", false));
+                  //   // });
+                  // }, child: Text("test")),
+
                   Container(
                       // height: getMediaQueryHeight(context, 0.08),
                       width: getMediaQueryWidth(context, 0.28),
@@ -369,8 +389,8 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                                   print("+++${homeController.selectedWarehouse?.id}");
                                   homeController.orderList.clear();
                                   homeController.orderList.refresh();
-                                  homeController.sessionManager.realm.write(() {
-                                    homeController.sessionManager.realm.deleteAll<OrderPicture>();
+                                  homeController.databaseHelper.realm.write(() {
+                                    homeController.databaseHelper.realm.deleteAll<OrderPicture>();
                                   });
                                   homeController.getOrderData(homeController.selectFilterController.text,homeController.selectedWarehouse!.id!);
                                 } else {
@@ -768,7 +788,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
 
   Widget tableView(Order ordersModel, int index, BuildContext context) {
     OrderPicture? pictureObj;
-    pictureObj = sessionManager.realm
+    pictureObj = homeController.databaseHelper.realm
         .query<OrderPicture>("orderNumber == '${ordersModel.customerOrderNumber ?? ""}'")
         .firstOrNull;
 
@@ -935,6 +955,10 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
       ),
     );
   }
+
+  // Widget getPodWidget(int index, Order ordersModel, GlobalKey homeKey){
+  //
+  // }
 
   void overRideWHDock(String? orderNumber) {
     Platform.isAndroid

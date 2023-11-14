@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:order_search/constant/app_constant.dart';
+import 'package:order_search/realm/order_picture.dart';
 import 'package:order_search/routes/base_route.dart';
+import 'package:realm/realm.dart';
 
 import 'toolbar_controller.dart';
 
@@ -25,6 +27,7 @@ class _ToolBarViewState extends BaseRoute<ToolBarView> with AppData, SingleTicke
   void initState() {
     _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
     _animationController.repeat(reverse: true);
+
     super.initState();
   }
 
@@ -64,7 +67,7 @@ class _ToolBarViewState extends BaseRoute<ToolBarView> with AppData, SingleTicke
           margin: EdgeInsets.only(top: getMediaQueryHeight(context, 0.015), bottom: getMediaQueryHeight(context, 0.01)),
           height: getMediaQueryHeight(context, 0.07),
           width: getMediaQueryWidth(context, 0.98),
-          child: Container(
+          child: Obx(() => Container(
             decoration: BoxDecoration(color: Colors.grey.shade200.withOpacity(0.15)),
             padding: EdgeInsets.symmetric(horizontal: getMediaQueryWidth(context, 0.025), vertical: getMediaQueryWidth(context, 0.01)),
             child: Row(
@@ -81,23 +84,36 @@ class _ToolBarViewState extends BaseRoute<ToolBarView> with AppData, SingleTicke
                     height: 70,
                   ),
                 ),
-                FadeTransition(
-                    opacity: _animationController,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: getMediaQueryWidth(context, 0.03), vertical: getMediaQueryWidth(context, 0.01)),
-                      decoration:
-                          BoxDecoration(color: Colors.white24, border: Border.all(color: Colors.grey.shade300), borderRadius: BorderRadius.circular(10)),
-                      child: Row(
-                        children: [
-                          Text("2", style: TextStyle(fontSize: getMediaQueryWidth(context, 0.028),color: Colors.white, fontWeight: FontWeight.bold)),
-                          SizedBox(width: getMediaQueryWidth(context, 0.01),),
-                          Text("Syncing...", style: TextStyle(fontSize: getMediaQueryWidth(context, 0.028),color: Colors.white, fontWeight: FontWeight.normal)),
-                        ],
+                toolBarController.pictures.value.isNotEmpty
+                    ? Container(
+                  padding: EdgeInsets.symmetric(horizontal: getMediaQueryWidth(context, 0.03), vertical: getMediaQueryWidth(context, 0.01)),
+                  decoration:
+                  BoxDecoration(color: Colors.white24, border: Border.all(color: Colors.grey.shade300), borderRadius: BorderRadius.circular(10)),
+                  child: Row(
+                    children: [
+                      Text("${toolBarController.pictures.value.length}",
+                          style: TextStyle(fontSize: getMediaQueryWidth(context, 0.028), color: Colors.white, fontWeight: FontWeight.bold)),
+                      SizedBox(
+                        width: getMediaQueryWidth(context, 0.015),
                       ),
-                    ))
+                      FadeTransition(
+                        opacity: _animationController,
+                        child: Text("Syncing...",
+                            style: TextStyle(fontSize: getMediaQueryWidth(context, 0.028), color: Colors.white, fontWeight: FontWeight.normal)),
+                      )
+                    ],
+                  ),
+                )
+                    : Icon(Icons.check_circle,color: Colors.green,)
+                // Container(
+                //   // padding: EdgeInsets.symmetric(horizontal: getMediaQueryWidth(context, 0.03), vertical: getMediaQueryWidth(context, 0.01)),
+                //   decoration:
+                //   BoxDecoration(color: Colors.white24,),
+                //   child: Icon(Icons.check_circle,color: Colors.green,),
+                // ).marginZero.paddingZero
               ],
             ),
-          )),
+          ))),
     );
   }
 }
