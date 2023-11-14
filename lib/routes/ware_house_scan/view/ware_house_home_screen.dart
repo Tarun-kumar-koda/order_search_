@@ -146,7 +146,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                       text: const TextSpan(
                         style: TextStyle(fontSize: 12, color: Colors.grey),
                         children: <TextSpan>[
-                          TextSpan(text: "choose An Exception Message", style: TextStyle(overflow: TextOverflow.ellipsis)),
+                          TextSpan(text: "choose a warehouse", style: TextStyle(overflow: TextOverflow.ellipsis)),
                         ],
                       ),
                     ),
