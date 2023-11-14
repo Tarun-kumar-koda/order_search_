@@ -1,4 +1,6 @@
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:order_search/Utils/utils.dart';
@@ -17,13 +19,33 @@ class ToolBarController extends GetxController with AppData{
   var userModel = UserModel().obs;
   SessionManager sessionManager = SessionManager().getInstance();
 
+  var period = const Duration(seconds:1);
+
+  Rx<UniqueKey> changes = UniqueKey().obs;
+
+
   late Rx<RealmList<OrderPicture>> pictures;
 
   @override
   void onInit() {
     super.onInit();
     fetch();
+    listener();
     getUserObject();
+  }
+
+  listener(){
+    Timer.periodic(period,(arg){
+      fetch();
+      changes.value = UniqueKey();
+      // print(pictures.value.length);
+    });
+    // pictures.value.changes.listen((event) {
+    //   print("event");
+    //   print(event);
+    // });
+
+
   }
 
   fetch(){

@@ -911,7 +911,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                       )
                     ],
                   ),
-                  PodImagesWidget(orderDetails: ordersModel, parentKey: homeKey),
+                  PodImagesWidget(key: Key(ordersModel.id!),orderDetails: ordersModel, parentKey: homeKey,widgetIndex: index),
                   // ElevatedButton(onPressed: (){
                   //   OrderPicture? op = sessionManager.realm.query<OrderPicture>("orderNumber == '${homeController.orderList.first.orderNumber}'").firstOrNull;
                   //   print(op?.localPath);

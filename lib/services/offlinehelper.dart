@@ -24,6 +24,8 @@ class OfflineHelper with AppData {
 
   late PicturesQueue picturesQueue;
 
+  var period = const Duration(seconds: 5);
+
   late StreamSubscription<RealmListChanges<OrderPicture>> listen;
 
   List<int> executionQueue = [];
@@ -37,10 +39,17 @@ class OfflineHelper with AppData {
       }
       picturesQueue = databaseHelper.realm.all<PicturesQueue>().first;
       if(picturesQueue.queue.isNotEmpty) triggerQueue();
-      // runQueue();
+      initPeriodicCaller();
     } catch (ex) {
       print(ex);
     }
+  }
+
+  initPeriodicCaller() {
+    Timer.periodic(period, (arg) {
+      print('calling initPeriodicCaller: pending pictures -> ${picturesQueue.queue.length}');
+      if(picturesQueue.queue.isNotEmpty) triggerQueue();
+    });
   }
 
   triggerQueue(){

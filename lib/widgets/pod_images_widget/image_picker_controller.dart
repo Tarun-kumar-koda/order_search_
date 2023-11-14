@@ -50,12 +50,12 @@ class ImagePickerController extends GetxController with AppData {
     picturesQueue = databaseHelper.realm.all<PicturesQueue>().first;
     // picturesQueue = databaseHelper.realm.all<PicturesQueue>().first;
     fetch();
-    initiateListener();
+    // _initiateListener();
     checkEditable();
     super.onInit();
   }
 
-  initiateListener(){
+  _initiateListener(){
     listen = picturesQueue.queue.changes.listen((event) {
       print("&&&${event.list.length}");
     });
@@ -273,32 +273,16 @@ class ImagePickerController extends GetxController with AppData {
   }
 
   void uploadButtonHandler() {
-    // Utils.showLoadingDialog();
-    // Future.delayed(const Duration(seconds: 1),() {
-    //   wareHouseHomeController.orderList.removeWhere((element) => element.order!.id == widget.orderDetails.id);
-    //   wareHouseHomeController.orderList.refresh();
-    //   Utils.hideLoadingDialog();
-    // });
+    Utils.showLoadingDialog();
+    Future.delayed(const Duration(milliseconds: 600),() {
+      Utils.hideLoadingDialog();
+    });
     // if (await imagePickerController.updatePicturesApi()) {
     if (pushImageToQueue(orderDetails)) {
       // setState(() {
-      //   imagePickerController.sessionManager.realm.write(() {
-      //     imagePickerController.pictureObj.value!.isOnlineSync = true;
-      //   });
-      // });
-      // setState(() {
         orderDetails.isOnlineSync = true;
       // });
-        imagesList.value.clear();
 
-      toolBarController.fetch();
-
-      toolBarController.pictures.refresh();
-
-
-      // print("picturequeue: ${imagePickerController.picturesQueue.queue.length}");
-
-      // Utils.showToastMessage(context: context, "Uploaded Successfully");
     }
   }
 }

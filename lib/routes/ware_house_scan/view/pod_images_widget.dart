@@ -19,11 +19,11 @@ import '../controller/scan_ware_house_controller.dart';
 class PodImagesWidget extends StatefulWidget {
   final Order orderDetails;
   final GlobalKey parentKey;
+  final int widgetIndex;
 
   // final PicturesQueue picturesQueue;
 
-
-  const PodImagesWidget({super.key, required this.orderDetails, required this.parentKey});
+  const PodImagesWidget({super.key, required this.orderDetails, required this.parentKey, required this.widgetIndex});
 
   @override
   State<PodImagesWidget> createState() => _PodImagesWidgetState();
@@ -39,11 +39,13 @@ class _PodImagesWidgetState extends BaseRoute<PodImagesWidget> {
   @override
   void initState() {
     // imagePickerController = Get.put(ImagePickerController(orderDetails: widget.orderDetails));
-    imagePickerController =  ImagePickerController(orderDetails: widget.orderDetails,);
+    imagePickerController = ImagePickerController(
+      orderDetails: widget.orderDetails,
+    );
     imagePickerController.onInit();
-    toolBarController.pictures.listen((p0) {
-      print("listener");
-    });
+    // toolBarController.pictures.listen((p0) {
+    //   print("listener");
+    // });
     super.initState();
   }
 
@@ -168,8 +170,8 @@ class _PodImagesWidgetState extends BaseRoute<PodImagesWidget> {
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           shape:
                               MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
-                          backgroundColor: !Utils.isEmpty(imagePickerController.orderDetails.localPath)
-                              && !imagePickerController.orderDetails.isOnlineSync!
+                          backgroundColor: !Utils.isEmpty(imagePickerController.orderDetails.localPath) &&
+                                  !imagePickerController.orderDetails.isOnlineSync!
                               ? MaterialStateProperty.all<Color>(Utils.hexColor(AppColor.appPrimaryColor))
                               : MaterialStateProperty.all<Color>(Colors.grey),
                           // backgroundColor:  MaterialStateProperty.all<Color>(Utils.hexColor(AppColor.appPrimaryColor)),
@@ -177,8 +179,18 @@ class _PodImagesWidgetState extends BaseRoute<PodImagesWidget> {
                         onPressed: !Utils.isEmpty(imagePickerController.orderDetails.localPath) &&
                                 !imagePickerController.orderDetails.isOnlineSync!
                             ? () async {
-                          imagePickerController.uploadButtonHandler();
-                                // imagePickerController.pictureObj.refresh();
+                                Utils.showLoadingDialog();
+                                Future.delayed(const Duration(milliseconds: 600), () {
+                                  Utils.hideLoadingDialog();
+                                });
+                                // if (await imagePickerController.updatePicturesApi()) {
+                                if (imagePickerController.pushImageToQueue(imagePickerController.orderDetails)) {
+                                  setState(() {
+                                    wareHouseHomeController.orderList.removeAt(widget.widgetIndex);
+                                    wareHouseHomeController.orderList.refresh();
+                                    imagePickerController.orderDetails.isOnlineSync = true;
+                                  });
+                                }
                               }
                             : null,
                         child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
@@ -278,9 +290,9 @@ class _PodImagesWidgetState extends BaseRoute<PodImagesWidget> {
     //   "local": imagePickerController.imagesList.value[index].picture?.localPath,
     //   "url": imagePickerController.imagesList.value[index].picture?.url,
     // });
-    if (kDebugMode) {
-      print(imagePickerController.imagesList.value.length);
-    }
+    // if (kDebugMode) {
+    //   print(imagePickerController.imagesList.value.length);
+    // }
     return GestureDetector(
       onTap: () {
         print(imagePickerController.orderDetails.customerOrderNumber);
@@ -331,15 +343,17 @@ class _PodImagesWidgetState extends BaseRoute<PodImagesWidget> {
               ),
               padding: EdgeInsets.symmetric(horizontal: getMediaQueryWidth(context, 0.05)),
               height: 20,
-              child: imagePickerController.orderDetails.isOnlineSync! ? Icon(
-                Icons.cloud_done,
-                color: Colors.green.shade300,
-                size: 15,
-              ): const Icon(
-                Icons.warning,
-                color: Colors.grey,
-                size: 15,
-              ),
+              child: imagePickerController.orderDetails.isOnlineSync!
+                  ? Icon(
+                      Icons.cloud_done,
+                      color: Colors.green.shade300,
+                      size: 15,
+                    )
+                  : const Icon(
+                      Icons.warning,
+                      color: Colors.grey,
+                      size: 15,
+                    ),
             ),
           ),
           if (imagePickerController.isPageEditable)

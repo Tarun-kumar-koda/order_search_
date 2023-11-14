@@ -25,10 +25,16 @@ class _ToolBarViewState extends BaseRoute<ToolBarView> with AppData, SingleTicke
 
   @override
   void initState() {
-    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
-    _animationController.repeat(reverse: true);
-
+    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 400));
+    _animationController.repeat(reverse: true,max: 1,min: 0.2);
+    initListener();
     super.initState();
+  }
+
+  initListener() {
+    toolBarController.changes.listen((p0) {
+      setState(() {});
+    });
   }
 
   @override
@@ -43,7 +49,9 @@ class _ToolBarViewState extends BaseRoute<ToolBarView> with AppData, SingleTicke
   }
 
   Widget toolBar() {
-    double spaceBetween = Get.currentRoute != AppLinks.stopListNamedRoute ? getMediaQueryWidth(context, 0.11) : getMediaQueryWidth(context, 0.13);
+    double spaceBetween = Get.currentRoute != AppLinks.stopListNamedRoute
+        ? getMediaQueryWidth(context, 0.11)
+        : getMediaQueryWidth(context, 0.13);
     return Align(
       alignment: Alignment.center,
       child: Container(
@@ -59,7 +67,11 @@ class _ToolBarViewState extends BaseRoute<ToolBarView> with AppData, SingleTicke
                   // Utils.hexColor(AppColor.appPrimaryColor),
                 ],
               ),
-              border: Border.all(color: Colors.grey.shade400, width: 2, style: BorderStyle.solid, strokeAlign: BorderSide.strokeAlignOutside),
+              border: Border.all(
+                  color: Colors.grey.shade400,
+                  width: 2,
+                  style: BorderStyle.solid,
+                  strokeAlign: BorderSide.strokeAlignOutside),
               borderRadius: BorderRadius.circular(40),
               boxShadow: [
                 // BoxShadow(offset: Offset(6, 5), color: Colors.grey.withOpacity(0.25), blurRadius: 8, spreadRadius: 4),
@@ -68,52 +80,75 @@ class _ToolBarViewState extends BaseRoute<ToolBarView> with AppData, SingleTicke
           height: getMediaQueryHeight(context, 0.07),
           width: getMediaQueryWidth(context, 0.98),
           child: Obx(() => Container(
-            decoration: BoxDecoration(color: Colors.grey.shade200.withOpacity(0.15)),
-            padding: EdgeInsets.symmetric(horizontal: getMediaQueryWidth(context, 0.025), vertical: getMediaQueryWidth(context, 0.01)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  height: getMediaQueryWidth(context, 0.08),
-                  width: getMediaQueryWidth(context, 0.35),
-                  child: Image.asset(
-                    AppConstant.splashScreenPath,
-                    filterQuality: FilterQuality.high,
-                    color: Colors.white.withOpacity(0.85),
-                    width: 120,
-                    height: 70,
-                  ),
-                ),
-                toolBarController.pictures.value.isNotEmpty
-                    ? Container(
-                  padding: EdgeInsets.symmetric(horizontal: getMediaQueryWidth(context, 0.03), vertical: getMediaQueryWidth(context, 0.01)),
-                  decoration:
-                  BoxDecoration(color: Colors.white24, border: Border.all(color: Colors.grey.shade300), borderRadius: BorderRadius.circular(10)),
-                  child: Row(
-                    children: [
-                      Text("${toolBarController.pictures.value.length}",
-                          style: TextStyle(fontSize: getMediaQueryWidth(context, 0.028), color: Colors.white, fontWeight: FontWeight.bold)),
-                      SizedBox(
-                        width: getMediaQueryWidth(context, 0.015),
+                decoration: BoxDecoration(color: Colors.grey.shade200.withOpacity(0.15)),
+                padding: EdgeInsets.symmetric(
+                    horizontal: getMediaQueryWidth(context, 0.025), vertical: getMediaQueryWidth(context, 0.01)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      height: getMediaQueryWidth(context, 0.08),
+                      width: getMediaQueryWidth(context, 0.35),
+                      child: Image.asset(
+                        AppConstant.splashScreenPath,
+                        filterQuality: FilterQuality.high,
+                        color: Colors.white.withOpacity(0.85),
+                        width: 120,
+                        height: 70,
                       ),
-                      FadeTransition(
-                        opacity: _animationController,
-                        child: Text("Syncing...",
-                            style: TextStyle(fontSize: getMediaQueryWidth(context, 0.028), color: Colors.white, fontWeight: FontWeight.normal)),
-                      )
-                    ],
-                  ),
-                )
-                    : Icon(Icons.check_circle,color: Colors.green,)
-                // Container(
-                //   // padding: EdgeInsets.symmetric(horizontal: getMediaQueryWidth(context, 0.03), vertical: getMediaQueryWidth(context, 0.01)),
-                //   decoration:
-                //   BoxDecoration(color: Colors.white24,),
-                //   child: Icon(Icons.check_circle,color: Colors.green,),
-                // ).marginZero.paddingZero
-              ],
-            ),
-          ))),
+                    ),
+                    toolBarController.pictures.value.length > 0
+                        ? Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: getMediaQueryWidth(context, 0.03),
+                                vertical: getMediaQueryWidth(context, 0.01)),
+                            decoration: BoxDecoration(
+                                color: Colors.white24,
+                                border: Border.all(color: Colors.grey.shade300),
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Row(
+                              children: [
+                                Text("${toolBarController.pictures.value.length}",
+                                    style: TextStyle(
+                                        fontSize: getMediaQueryWidth(context, 0.028),
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold)),
+                                SizedBox(
+                                  width: getMediaQueryWidth(context, 0.015),
+                                ),
+                                FadeTransition(
+                                  opacity: _animationController,
+                                  child: Text("Syncing...",
+                                      style: TextStyle(
+                                          fontSize: getMediaQueryWidth(context, 0.028),
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.normal)),
+                                )
+                              ],
+                            ),
+                          )
+                        : Tooltip(
+                      message: "All pictures are synced",
+                          triggerMode: TooltipTriggerMode.tap,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: const Icon(
+                              Icons.check_circle_outlined,
+                              color: Colors.white,
+                              fill: 1,
+                              opticalSize: 1,
+                            ),
+                          ),
+                        )
+                    // Container(
+                    //   // padding: EdgeInsets.symmetric(horizontal: getMediaQueryWidth(context, 0.03), vertical: getMediaQueryWidth(context, 0.01)),
+                    //   decoration:
+                    //   BoxDecoration(color: Colors.white24,),
+                    //   child: Icon(Icons.check_circle,color: Colors.green,),
+                    // ).marginZero.paddingZero
+                  ],
+                ),
+              ))),
     );
   }
 }
