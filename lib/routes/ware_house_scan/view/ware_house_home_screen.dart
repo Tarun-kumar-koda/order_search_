@@ -5,7 +5,6 @@ import 'dart:math';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:order_search/Utils/utils.dart';
 import 'package:order_search/constant/app_constant.dart';
@@ -312,12 +311,12 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                         }
                       },
                       decoration: InputDecoration(
-                        enabledBorder: OutlineInputBorder(
+                        enabledBorder: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(10)),
                           borderSide: BorderSide(width: 1.5, color: Colors.grey),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderRadius: const BorderRadius.all(Radius.circular(10)),
                           borderSide: BorderSide(width: 1.5, color: Utils.hexColor(AppColor.appPrimaryColor)),
                         ),
                         suffixIcon: IconButton(
@@ -336,14 +335,14 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                         isDense: true,
                         border: InputBorder.none,
                         fillColor: Colors.transparent,
-                        hintStyle: TextStyle(color: Colors.grey),
+                        hintStyle: const TextStyle(color: Colors.grey),
                         hintText: "Search",
                         contentPadding: EdgeInsets.only(left: getMediaQueryWidth(context, 0.03)),
                       ))),
             ],
           )),
           Container(
-              padding: EdgeInsets.only(top: 15),
+              padding: const EdgeInsets.only(top: 15),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

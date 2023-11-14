@@ -1,19 +1,15 @@
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:order_search/constant/app_constant.dart';
-import 'package:order_search/constant/db_constant.dart';
 import 'package:order_search/routes/base_route.dart';
 
-import '../../Utils/logger.dart';
-import '../../constant/route_constant.dart';
-import '../../services/session_manager.dart';
 import 'toolbar_controller.dart';
 
 class ToolBarView extends StatefulWidget {
+  const ToolBarView({super.key});
+
   @override
-  _ToolBarViewState createState() => _ToolBarViewState();
+  State<ToolBarView> createState() => _ToolBarViewState();
 }
 
 class _ToolBarViewState extends BaseRoute<ToolBarView> with AppData, SingleTickerProviderStateMixin {
@@ -27,7 +23,7 @@ class _ToolBarViewState extends BaseRoute<ToolBarView> with AppData, SingleTicke
 
   @override
   void initState() {
-    _animationController = AnimationController(vsync: this, duration: Duration(seconds: 1));
+    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
     _animationController.repeat(reverse: true);
     super.initState();
   }
@@ -44,9 +40,7 @@ class _ToolBarViewState extends BaseRoute<ToolBarView> with AppData, SingleTicke
   }
 
   Widget toolBar() {
-    double spaceBetween = Get.currentRoute != AppLinks.stopListNamedRoute
-        ? getMediaQueryWidth(context, 0.11)
-        : getMediaQueryWidth(context, 0.13);
+    double spaceBetween = Get.currentRoute != AppLinks.stopListNamedRoute ? getMediaQueryWidth(context, 0.11) : getMediaQueryWidth(context, 0.13);
     return Align(
       alignment: Alignment.center,
       child: Container(
@@ -62,11 +56,7 @@ class _ToolBarViewState extends BaseRoute<ToolBarView> with AppData, SingleTicke
                   // Utils.hexColor(AppColor.appPrimaryColor),
                 ],
               ),
-              border: Border.all(
-                  color: Colors.grey.shade400,
-                  width: 2,
-                  style: BorderStyle.solid,
-                  strokeAlign: BorderSide.strokeAlignOutside),
+              border: Border.all(color: Colors.grey.shade400, width: 2, style: BorderStyle.solid, strokeAlign: BorderSide.strokeAlignOutside),
               borderRadius: BorderRadius.circular(40),
               boxShadow: [
                 // BoxShadow(offset: Offset(6, 5), color: Colors.grey.withOpacity(0.25), blurRadius: 8, spreadRadius: 4),
@@ -76,7 +66,7 @@ class _ToolBarViewState extends BaseRoute<ToolBarView> with AppData, SingleTicke
           width: getMediaQueryWidth(context, 0.98),
           child: Container(
             decoration: BoxDecoration(color: Colors.grey.shade200.withOpacity(0.15)),
-            padding: EdgeInsets.all(getMediaQueryWidth(context, 0.01)),
+            padding: EdgeInsets.symmetric(horizontal: getMediaQueryWidth(context, 0.025), vertical: getMediaQueryWidth(context, 0.01)),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -91,6 +81,20 @@ class _ToolBarViewState extends BaseRoute<ToolBarView> with AppData, SingleTicke
                     height: 70,
                   ),
                 ),
+                FadeTransition(
+                    opacity: _animationController,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: getMediaQueryWidth(context, 0.03), vertical: getMediaQueryWidth(context, 0.01)),
+                      decoration:
+                          BoxDecoration(color: Colors.white24, border: Border.all(color: Colors.grey.shade300), borderRadius: BorderRadius.circular(10)),
+                      child: Row(
+                        children: [
+                          Text("2", style: TextStyle(fontSize: getMediaQueryWidth(context, 0.028),color: Colors.white, fontWeight: FontWeight.bold)),
+                          SizedBox(width: getMediaQueryWidth(context, 0.01),),
+                          Text("Syncing...", style: TextStyle(fontSize: getMediaQueryWidth(context, 0.028),color: Colors.white, fontWeight: FontWeight.normal)),
+                        ],
+                      ),
+                    ))
               ],
             ),
           )),
