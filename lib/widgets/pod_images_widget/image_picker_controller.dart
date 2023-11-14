@@ -40,7 +40,7 @@ class ImagePickerController extends GetxController with AppData {
   void fetch() async {
     imagesList.value.clear();
     pictureObj =
-        (sessionManager.realm.query<OrderPicture>("orderNumber == '${orderDetails.customerOrderNumber ?? ""}'").firstOrNull).obs;
+        (sessionManager.realm.query<OrderPicture>("orderNumber == '${orderDetails.customerOrderNumber!}'").firstOrNull).obs;
     if (pictureObj.value != null) imagesList.value.add(pictureObj.value!.localPath!);
     imagesList.refresh();
   }

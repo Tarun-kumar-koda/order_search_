@@ -322,6 +322,8 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                         ),
                         suffixIcon: IconButton(
                           onPressed: () {
+                              homeController.orderList.clear();
+                              homeController.orderList.refresh();
                             homeController.selectFilterController.text = "";
                           },
                           icon: Icon(
@@ -366,6 +368,11 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                               Utils.checkNetworkStatus().then((value) {
                                 if (value) {
                                   print("+++${homeController.selectedWarehouse?.id}");
+                                  homeController.orderList.clear();
+                                  homeController.orderList.refresh();
+                                  homeController.sessionManager.realm.write(() {
+                                    homeController.sessionManager.realm.deleteAll<OrderPicture>();
+                                  });
                                   homeController.getOrderData(homeController.selectFilterController.text,homeController.selectedWarehouse!.id!);
                                 } else {
                                   Utils.showAlertDialog(AppConstant.networkNotConnected);
