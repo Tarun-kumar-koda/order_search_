@@ -91,6 +91,28 @@ class _ToolBarViewState extends BaseRoute<ToolBarView> with AppData, SingleTicke
                     height: 70,
                   ),
                 ),
+                Row(
+                  children: [
+                    Obx(() => GestureDetector(
+                      onTap: () {
+                        Get.toNamed(AppLinks.profileNamedRoute);
+                      },
+                      child: Container(
+                        margin: EdgeInsets.only(left: getMediaQueryWidth(context, 0.03)),
+                        child: toolBarController.isImageLoaded.value
+                            ? CircleAvatar(
+                          radius: getMediaQueryWidth(context, 0.05),
+                          backgroundImage: NetworkImage(toolBarController.imgUrl.value),
+                        )
+                            : Image.asset(
+                          AppConstant.profileImage,
+                          width: MediaQuery.of(context).size.width * 0.09,
+                          height: MediaQuery.of(context).size.height * 0.09,
+                        ),
+                      ),
+                    )),
+                  ],
+                ),
               ],
             ),
           )),

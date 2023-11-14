@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Order Search</string>
+	<string>FE DMS</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -48,10 +48,10 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
     <key>NSCameraUsageDescription</key>
-    <string>Fleet Enable allows you to capture the order's proof of delivery.</string>
+    <string>Fleet Enable allows you to capture the parcels and also allow you to capture a photo as your profile picture.</string>
     <key>NSPhotoLibraryAddUsageDescription</key>
-    <string>Fleet Enable needs access to save  your photo  in gallery.</string>
+    <string>Fleet Enable needs access to save your photo in gallery.</string>
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>Flee Enable needs to access your gallery to update order's proof of delivery.</string>
+    <string>Flee Enable needs to access your gallery to update order's proof of delivery and update profile picture.</string>
 </dict>
 </plist>

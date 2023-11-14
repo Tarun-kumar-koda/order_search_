@@ -94,6 +94,7 @@ flutter:
     - assets/images/fleet_truck.png
     - assets/images/fleet_truck_icon.png
     - assets/images/banner.png
+    - assets/images/account_profile.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
