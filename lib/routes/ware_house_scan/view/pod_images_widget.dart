@@ -269,9 +269,10 @@ imagePickerController.onInit();
     //   "local": imagePickerController.imagesList.value[index].picture?.localPath,
     //   "url": imagePickerController.imagesList.value[index].picture?.url,
     // });
-    print(imagePickerController.imagesList.value.length);
+    // print(imagePickerController.imagesList.value.length);
     return GestureDetector(
       onTap: () {
+        print(imagePickerController.orderDetails.customerOrderNumber);
         Get.to(
             () => ImageViewer(
                   isPageEditable: imagePickerController.isPageEditable,
