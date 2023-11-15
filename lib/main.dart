@@ -19,9 +19,12 @@ void main() {
   SharedPrefs().init();
   print("main");
   // FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-  DatabaseHelper();
-  OfflineHelper().init();
+  // OfflineHelper().init();
   runApp(MyApp());
+
+  // DatabaseHelper databaseHelper = DatabaseHelper();
+  //
+  // databaseHelper.realm.write(() => databaseHelper.realm.deleteAll<OrderPicture>());
 
   // DatabaseHelper db = DatabaseHelper();
   // db.realm.write(() {

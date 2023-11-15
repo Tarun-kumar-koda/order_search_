@@ -2,14 +2,15 @@ import 'dart:io';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:order_search/Utils/utils.dart';
 import 'package:order_search/constant/app_constant.dart';
+import 'package:order_search/my_app.dart';
 import 'package:order_search/routes/base_route.dart';
 import 'package:order_search/routes/ware_house_scan/view/pod_images_widget.dart';
 import 'package:order_search/services/session_manager.dart';
-import 'package:order_search/widgets/toolbar/toolbar_controller.dart';
 import 'package:order_search/widgets/toolbar/toolbar_view.dart';
 import '../../../model/global_search_order.dart';
 import '../../../realm/order_picture.dart';
@@ -30,6 +31,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
   var showCrossDockButton = true;
   static GlobalKey homeKey = GlobalKey();
   String textFieldValueChanging = "";
+  late String truck;
 
   @override
   void initState() {
@@ -56,7 +58,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
         body: SafeArea(
             child: Column(
           children: [
-            ToolBarView(),
+            const ToolBarView(),
             SizedBox(
               height: getMediaQueryHeight(context, 0.001),
             ),
@@ -66,7 +68,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
               height: 3,
             ),
             Container(
-              padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 8.0),
+              padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 8.0),
               width: getMediaQueryWidth(context, 1),
               child: Column(
                 children: [
@@ -118,9 +120,9 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
           key: homeController.formKey,
           child: Column(
             children: [
-              Container(
+              SizedBox(
                 width: getMediaQueryWidth(context, 0.9),
-                child: homeController.isApiCompleted.value && homeController.whLocList.length == 0 ? Container(
+                child: homeController.isApiCompleted.value && homeController.whLocList.isEmpty ? Container(
                   padding: EdgeInsets.all(getMediaQueryWidth(context, 0.03)),
                   decoration: BoxDecoration(
                       border: Border.all(
@@ -133,7 +135,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                     onTap: () {
                       homeController.getWarehouseList();
                     },
-                    child: Text("Tap to fetch warehouses", style: TextStyle(color: Colors.black, fontSize: 15, overflow: TextOverflow.fade)),
+                    child: const Text("Tap to fetch warehouses", style: TextStyle(color: Colors.black, fontSize: 15, overflow: TextOverflow.fade)),
                   )
                 ) : DropdownButtonFormField2(
                   disabledHint: RichText(
@@ -150,10 +152,10 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                   enableFeedback: true,
                   isExpanded: false,
                   decoration: InputDecoration(
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.black)),
-                    contentPadding: EdgeInsets.only(right: 5),
-                    errorBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.red), borderRadius: BorderRadius.circular(10)),
-                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.indigo), borderRadius: BorderRadius.circular(10)),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Colors.black)),
+                    contentPadding: const EdgeInsets.only(right: 5),
+                    errorBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.red), borderRadius: BorderRadius.circular(10)),
+                    focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.indigo), borderRadius: BorderRadius.circular(10)),
                     focusColor: Colors.indigo,
                     isDense: true,
                   ),
@@ -170,21 +172,19 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                         (data) => DropdownMenuItem(
                       value: data,
                       child: data.id == null
-                          ? Container(
-                        child: RichText(
-                          text: TextSpan(
-                            style: TextStyle(fontSize: 14, color: Colors.grey),
-                            children: <TextSpan>[
-                              TextSpan(text: data.name, style: TextStyle(overflow: TextOverflow.ellipsis)),
-                            ],
-                          ),
-                        ),
-                      )
+                          ? RichText(
+                            text: TextSpan(
+                              style: const TextStyle(fontSize: 14, color: Colors.grey),
+                              children: <TextSpan>[
+                                TextSpan(text: data.name, style: const TextStyle(overflow: TextOverflow.ellipsis)),
+                              ],
+                            ),
+                          )
                           : RichText(
                             text: TextSpan(
                               style: const TextStyle(fontSize: 14, color: Colors.black),
                               children: <TextSpan>[
-                                TextSpan(text: data.name, style: TextStyle(overflow: TextOverflow.ellipsis)),
+                                TextSpan(text: data.name, style: const TextStyle(overflow: TextOverflow.ellipsis)),
                               ],
                             ),
                           ),
@@ -252,10 +252,10 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                 textInputAction: TextInputAction.search,
                 onSubmitted: (value) {
                   if (homeController.selectFilterController.text.isNotEmpty) {
-                    FocusScope.of(context).requestFocus(new FocusNode());
+                    FocusScope.of(context).requestFocus(FocusNode());
                     Utils.checkNetworkStatus().then((value) {
                       if (value) {
-                        homeController.getOrderData(homeController.selectFilterController.text,homeController.selectedWarehouse!.id!);
+                        homeController.getOrderData(homeController.selectFilterController.text,homeController.selectedWarehouse.id!);
                       } else {
                         Utils.showAlertDialog(AppConstant.networkNotConnected);
                       }
@@ -288,7 +288,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                     icon: Icon(
                       Icons.close_sharp,
                       size: 20,
-                      color: textFieldValueChanging.length > 0 ? Colors.black : Colors.grey,
+                      color: textFieldValueChanging.isNotEmpty ? Colors.black : Colors.grey,
                     ),
                   ),
                   filled: true,
@@ -302,11 +302,11 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
           ],
         ),
         Container(
-            padding: EdgeInsets.only(top: 15),
+            padding: const EdgeInsets.only(top: 15),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
+                SizedBox(
                     width: getMediaQueryWidth(context, 0.28),
                     child: ElevatedButton(
                         style: ButtonStyle(
@@ -322,7 +322,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                         onPressed: () async {
                           if(homeController.formKey.currentState!.validate()){
                           if (homeController.selectFilterController.text.isNotEmpty) {
-                            FocusScope.of(context).requestFocus(new FocusNode());
+                            FocusScope.of(context).requestFocus(FocusNode());
                             Utils.checkNetworkStatus().then((value) {
                               if (value) {
                                 homeController.orderList.clear();
@@ -330,7 +330,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                                 homeController.sessionManager.realm.write(() {
                                   homeController.sessionManager.realm.deleteAll<OrderPicture>();
                                 });
-                                homeController.getOrderData(homeController.selectFilterController.text,homeController.selectedWarehouse!.id!);
+                                homeController.getOrderData(homeController.selectFilterController.text,homeController.selectedWarehouse.id!);
                               } else {
                                 Utils.showAlertDialog(AppConstant.networkNotConnected);
                               }
@@ -406,23 +406,21 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                               behavior: HitTestBehavior.opaque,
                               onTap: () {},
                               child: Container(
-                                padding: EdgeInsets.all(15),
+                                padding: const EdgeInsets.all(15),
                                 width: getMediaQueryWidth(context, 0.95),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.max,
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Container(
-                                      child: Text(
-                                        "#${Utils.getTextValue(ordersModel.order?.customerOrderNumber ?? "")}",
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                        softWrap: false,
-                                        style: TextStyle(
-                                            fontSize: getMediaQueryWidth(context, 0.05),
-                                            color: Utils.hexColor(AppColor.appPrimaryColor),
-                                            fontWeight: FontWeight.w500),
-                                      ),
+                                    Text(
+                                      "#${Utils.getTextValue(ordersModel.order?.customerOrderNumber ?? "")}",
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                      softWrap: false,
+                                      style: TextStyle(
+                                          fontSize: getMediaQueryWidth(context, 0.05),
+                                          color: Utils.hexColor(AppColor.appPrimaryColor),
+                                          fontWeight: FontWeight.w500),
                                     ),
                                     IconButton(
                                         onPressed: () {
@@ -453,10 +451,6 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
   }
 
   Widget tableView(Order ordersModel, int index, BuildContext context) {
-    OrderPicture? pictureObj;
-    pictureObj = homeController.databaseHelper.realm
-        .query<OrderPicture>("orderNumber == '${ordersModel.customerOrderNumber ?? ""}'")
-        .firstOrNull;
 
     return Container(
       decoration: const BoxDecoration(
@@ -472,7 +466,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                 left: getMediaQueryWidth(context, 0.025),
               ),
               width: getMediaQueryWidth(context, 0.95),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10), bottomRight: Radius.circular(10))),
               child: Column(
@@ -527,7 +521,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                             style:
                                 TextStyle(fontWeight: FontWeight.w500, fontSize: getMediaQueryWidth(context, 0.035))),
                       ),
-                      Container(
+                      SizedBox(
                           width: getMediaQueryWidth(context, 0.5),
                           child: Text(Utils.getTextValue(ordersModel.accountName).toUpperCase(),
                               style: TextStyle(
@@ -546,7 +540,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                             style:
                                 TextStyle(fontWeight: FontWeight.w500, fontSize: getMediaQueryWidth(context, 0.035))),
                       ),
-                      Container(
+                      SizedBox(
                         width: getMediaQueryWidth(context, 0.5),
                         child: Text(Utils.getTextValue(ordersModel.customerFirstName.toString()),
                             style: TextStyle(
@@ -566,7 +560,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                             style:
                                 TextStyle(fontWeight: FontWeight.w500, fontSize: getMediaQueryWidth(context, 0.035))),
                       ),
-                      Container(
+                      SizedBox(
                         width: getMediaQueryWidth(context, 0.5),
                         child: Text(Utils.getTextValue(ordersModel.companyName.toString()),
                             style: TextStyle(
@@ -629,7 +623,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
   void overRideWHDock(String? orderNumber) {
     Platform.isAndroid
         ? showDialog(
-            builder: (context) => Container(
+            builder: (context) => SizedBox(
               width: double.infinity,
               child: AlertDialog(
                 titlePadding: EdgeInsets.only(
@@ -654,9 +648,9 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                 actions: <Widget>[
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(false),
-                    child: Text("No"),
+                    child: const Text("No"),
                   ),
-                  TextButton(onPressed: () {}, child: Text("Yes")),
+                  TextButton(onPressed: () {}, child: const Text("Yes")),
                 ],
               ),
             ),
@@ -692,7 +686,9 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
 
   List<Widget> startUnloadButton() {
     var truckAdded = homeController.wareHouseTruckNumText.text;
-    print(' inside startUnloadButton');
+    if (kDebugMode) {
+      print(' inside startUnloadButton');
+    }
     return [
       Container(
           alignment: Alignment.center,
@@ -701,17 +697,17 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
             // height: getMediaQueryWidth(context, 0.22),
             // margin: EdgeInsets.only(right: 150),
             // alignment: Alignment.center,
-            message: truckAdded == "" || truckAdded == null ? "Unloading Truck ${truckAdded}" : "",
+            message: Utils.isEmpty(truckAdded) ? "Unloading Truck $truckAdded" : "",
             child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   //                  width: getMediaQueryWidth(context, 0.97),
                   //  height: getMediaQueryWidth(context, 0.22),
                   //fixedSize: MaterialStateProperty.all(Size(0.22, 0.22)),
-                  shape: CircleBorder(),
-                  padding: EdgeInsets.all(20),
+                  shape: const CircleBorder(),
+                  padding: const EdgeInsets.all(20),
                   //     MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(7)),
                   backgroundColor:
-                      (truckAdded == "" || truckAdded == null) ? Utils.hexColor('#03C04A') : Utils.hexColor('#FF5733'),
+                      (truckAdded == "") ? Utils.hexColor('#03C04A') : Utils.hexColor('#FF5733'),
                   // homeController
                   //         .isAnyOrderCheck(homeController.scannedOrderList.value)
                   //  ?
@@ -725,7 +721,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                 ),
                 onPressed: () async {},
                 child: Text(
-                  truckAdded == "" || truckAdded == null ? "Start\nUnload" : "Finish\nUnload",
+                  truckAdded == "" ? "Start\nUnload" : "Finish\nUnload",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       color: Colors.white,
@@ -742,7 +738,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
   void resetButtonAction() {
     Platform.isAndroid
         ? showDialog(
-            builder: (context) => Container(
+            builder: (context) => SizedBox(
               width: double.infinity,
               child: AlertDialog(
                 titlePadding: EdgeInsets.only(
@@ -767,9 +763,9 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                 actions: <Widget>[
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(false),
-                    child: Text("${AppConstant.cancelText}"),
+                    child: const Text(AppConstant.cancelText),
                   ),
-                  TextButton(onPressed: () {}, child: Text("Reset")),
+                  TextButton(onPressed: () {}, child: const Text("Reset")),
                 ],
               ),
             ),
@@ -795,7 +791,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                       },
                       isDefaultAction: true,
                       child: Text(
-                        "${AppConstant.cancelText}",
+                        AppConstant.cancelText,
                         style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04),
                       ),
                     ),

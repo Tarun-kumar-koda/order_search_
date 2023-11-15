@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:order_search/Utils/logger.dart';
@@ -21,10 +22,9 @@ import 'package:order_search/services/session_manager.dart';
 import 'package:realm/realm.dart';
 
 import '../../../model/global_search_order.dart';
+import '../../../services/offlinehelper.dart';
 
-class WareHouseHomeController extends GetxController {
-  NetworkUtil networkUtil = NetworkUtil();
-  SessionManager sessionManager = SessionManager().getInstance();
+class WareHouseHomeController extends GetxController with AppData{
   TextEditingController selectFilterController = TextEditingController();
   List<TextEditingController> dockEditTextController =
       <TextEditingController>[].obs;
@@ -56,7 +56,7 @@ class WareHouseHomeController extends GetxController {
 
   late GlobalKey<FormState> formKey;
 
-  late WarehouseId selectedWarehouse;
+  late Locations selectedWarehouse;
 
   late OrderPicture? pictureObj;
   var isApiCompleted = false.obs;
@@ -80,7 +80,7 @@ class WareHouseHomeController extends GetxController {
   @override
   void onReady() {
     super.onReady();
-    getWarehouseList();
+    getWarehouseList().then((value) => OfflineHelper().init());
   }
 
   // initiateListener(){
@@ -95,13 +95,13 @@ class WareHouseHomeController extends GetxController {
 
   Future getOrderData(String val, String whId) async {
     Utils.showLoadingDialog();
-    dev.log('inside getOrderData ${val} && warehouseId: ${whId}');
+    dev.log('inside getOrderData $val && warehouseId: $whId');
     accessToken = await sessionManager.getAccessToken();
     // var orgId = "";
     var orgId = (await sessionManager.getOrgIds()).firstOrNull;
     dev.log(
-        'inside getOrderData org id & access token is ${orgId} ${accessToken} ');
-    refreshToken = await this.sessionManager.getRefreshToken();
+        'inside getOrderData org id & access token is $orgId $accessToken ');
+    refreshToken = await sessionManager.getRefreshToken();
     var res = await networkUtil.getDio(
         ApiConstant.endPoint.GLOBAL_SEARCH_ORDER, "GET_ORDER_DETAILS",
         body: {
@@ -123,7 +123,7 @@ class WareHouseHomeController extends GetxController {
       if (res.statusCode == 200) {
         GlobalSearchBaseResponse globalSearchBaseResponse = GlobalSearchBaseResponse.fromJson(res.data);
         if (globalSearchBaseResponse.customerOrders != null &&
-            globalSearchBaseResponse.customerOrders!.length > 0) {
+            globalSearchBaseResponse.customerOrders!.isNotEmpty) {
           orderList.value = globalSearchBaseResponse.customerOrders!;
         }
         Logger.logMessenger(msgTitle: "order search response",msgBody: {"data":jsonEncode(res.data)});
@@ -131,7 +131,7 @@ class WareHouseHomeController extends GetxController {
         getRefreshTokenCustomerInfo(val,whId);
       } else if (res.data["errors"] != null) {
         var errorMessage = res.data["errors"] as List<dynamic>;
-        if (errorMessage.length > 0) {
+        if (errorMessage.isNotEmpty) {
           Utils.showAlertDialog(res.data["errors"][0]);
         }
       } else {
@@ -154,7 +154,7 @@ class WareHouseHomeController extends GetxController {
           sessionManager.setRefreshToken(res.data["refresh_token"]);
           sessionManager
               .setAccessToken("${"bearer"} ${res.data["access_token"]}");
-          Future.delayed(Duration(seconds: 1), () {
+          Future.delayed(const Duration(seconds: 1), () {
             getOrderData(val,whId);
           });
         } else if (res.statusCode == 401) {
@@ -164,7 +164,9 @@ class WareHouseHomeController extends GetxController {
         }
       }
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 
@@ -185,7 +187,7 @@ class WareHouseHomeController extends GetxController {
         Utils.showLoadingDialog();
         String orgId = (await sessionManager.getOrgIds()).first;
         try {
-          var res = await NetworkUtil().getDio("${ApiConstant.endPoint.GET_WAREHOUSE_LIST}", "Warehouse List",
+          var res = await NetworkUtil().getDio(ApiConstant.endPoint.GET_WAREHOUSE_LIST, "Warehouse List",
             headers: ApiConstant().getHeaders(await sessionManager.getAccessToken()),
             body: {
               "page":1,

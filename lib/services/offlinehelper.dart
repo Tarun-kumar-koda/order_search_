@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:order_search/Utils/logger.dart';
@@ -7,13 +6,11 @@ import 'package:order_search/Utils/network_util.dart';
 import 'package:order_search/Utils/utils.dart';
 import 'package:order_search/constant/api_constant.dart';
 import 'package:order_search/constant/app_constant.dart';
-import 'package:order_search/model/global_search_order.dart';
 import 'package:order_search/realm/order_picture.dart';
 import 'package:order_search/routes/base_route.dart';
 import 'package:realm/realm.dart';
 
 class OfflineHelper with AppData {
-
   static final OfflineHelper _singleton = OfflineHelper._internal();
 
   OfflineHelper._internal();
@@ -26,9 +23,11 @@ class OfflineHelper with AppData {
 
   var period = const Duration(seconds: 5);
 
+  bool isQueueBusy = false;
+
   late StreamSubscription<RealmListChanges<OrderPicture>> listen;
 
-  List<int> executionQueue = [];
+  // List<int> executionQueue = [];
 
   init() {
     try {
@@ -38,7 +37,7 @@ class OfflineHelper with AppData {
         });
       }
       picturesQueue = databaseHelper.realm.all<PicturesQueue>().first;
-      if(picturesQueue.queue.isNotEmpty) triggerQueue();
+      // if(picturesQueue.queue.isNotEmpty) triggerQueue();
       initPeriodicCaller();
     } catch (ex) {
       print(ex);
@@ -46,35 +45,52 @@ class OfflineHelper with AppData {
   }
 
   initPeriodicCaller() {
-    Timer.periodic(period, (arg) {
-      print('calling initPeriodicCaller: pending pictures -> ${picturesQueue.queue.length}');
-      if(picturesQueue.queue.isNotEmpty) triggerQueue();
+    Timer.periodic(period, (arg) async {
+      print('pending pictures -> ${picturesQueue.queue.length}');
+      print("queue isBusy: $isQueueBusy");
+      if (picturesQueue.queue.isNotEmpty) triggerQueue();
     });
   }
 
-  triggerQueue(){
+  triggerQueue() {
     print("queue triggered");
-    executionQueue.add(executionQueue.isEmpty? executionQueue.length + 1 : executionQueue.reduce(max));
+    print("queue status: $isQueueBusy");
     runQueue();
   }
 
   Future runQueue() async {
     print("queue started");
-    // print("${executionQueue.last}");
-    if(executionQueue.isEmpty) return;
-    databaseHelper.realm.write(() {
+    if (picturesQueue.queue.isEmpty || isQueueBusy) return;
+    isQueueBusy = true;
+    await databaseHelper.realm.write(() async {
+      List<Future> futures = [];
+      // picturesQueue.queue.where((pending) => !pending.isOnlineSync).forEach((current) async {
+      //   if (await updatePicturesApi(current)) {
+      //     databaseHelper.realm.write(() {
+      //       current.isOnlineSync = true;
+      //       picturesQueue.queue.removeWhere((remaining) => remaining.id == current.id);
+      //     });
+      //   } else {
+      //     print("${current.orderId} failed!");
+      //   }
+      // });
       picturesQueue.queue.where((pending) => !pending.isOnlineSync).forEach((current) async {
-        if(await updatePicturesApi(current)){
-          databaseHelper.realm.write(() {
-            current.isOnlineSync = true;
-            picturesQueue.queue.removeWhere((remaining) => remaining.id == current.id);
-          });
-        }else{
-          print("${current.orderId} failed!");
-        }
+        futures.add(updatePictureAndMarkAsComplete(current));
       });
+      await futures.wait;
     });
-    if(executionQueue.isNotEmpty) executionQueue.removeLast();
+    isQueueBusy = false;
+  }
+
+  Future updatePictureAndMarkAsComplete(OrderPicture current) async {
+    if (await updatePicturesApi(current)) {
+      databaseHelper.realm.write(() {
+        current.isOnlineSync = true;
+        picturesQueue.queue.removeWhere((remaining) => remaining.id == current.id);
+      });
+    } else {
+      print("${current.orderId} failed!");
+    }
   }
 
   Future<bool> updatePicturesApi(OrderPicture picture) async {
