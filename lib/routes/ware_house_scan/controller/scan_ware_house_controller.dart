@@ -84,8 +84,7 @@ class WareHouseHomeController extends GetxController {
           "current_role":"admin",
           "org_id": orgId,
           "warehouse_ids": whId,
-          // "warehouse_ids":"602f69efc54be6404b724796",
-          "customer_order_number": val
+          "customer_order_number": val.toUpperCase()
         },
         headers: ApiConstant().getHeaders(accessToken));
     Utils.hideLoadingDialog();

@@ -27,8 +27,9 @@ class ImagePickerController extends GetxController with AppData {
   late Rx<OrderPicture?> pictureObj;
 
   late Order orderDetails;
+  late CustomerOrders customerOrders;
 
-  ImagePickerController({required this.orderDetails});
+  ImagePickerController({required this.orderDetails, required this.customerOrders});
 
   @override
   void onInit() {
@@ -182,6 +183,11 @@ class ImagePickerController extends GetxController with AppData {
 
   Future<bool> updatePicturesApi(OrderPicture picture) async {
     late dio.Response<dynamic>? res;
+    bool isTransferOrder = orderDetails.typeOfOrder == "T" ? true : false;
+    String destLocationId = "";
+    if(customerOrders.destination != null && customerOrders.destination!.id != null){
+      destLocationId = customerOrders.destination!.id ?? "";
+    }
     try {
       List<dio.MultipartFile> filesList = <dio.MultipartFile>[];
       String? path = picture.localPath;
@@ -194,7 +200,7 @@ class ImagePickerController extends GetxController with AppData {
         "pictures[]item_pictures[][organization_id]": (await sessionManager.getOrgIds()).first,
         "refer": "order",
         "pictures[]item_pictures[][ack_id]": fileName,
-        "location_id": orderDetails.csLocationId ?? "",
+        "location_id": isTransferOrder ? destLocationId : orderDetails.csLocationId ?? "",
         "pictures[]item_pictures[][picture_type]": "normal",
         "pictures[]item_pictures[][pic_title]": "POD",
         "pictures[]item_pictures[][pic_code]": "POD",

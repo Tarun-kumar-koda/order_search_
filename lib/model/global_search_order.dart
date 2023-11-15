@@ -34,10 +34,11 @@ class CustomerOrders {
   String? timeZoneId;
   String? timeZoneName;
   String? tzShortForm;
+  Origin? origin;
+  Origin? destination;
 
   CustomerOrders(
       {this.orderAppointments,
-        //this.quotationAmount,
         this.navRouteId,
         this.order,
         this.csLocation,
@@ -46,7 +47,9 @@ class CustomerOrders {
         this.city,
         this.timeZoneId,
         this.timeZoneName,
-        this.tzShortForm});
+        this.tzShortForm,
+        this.origin,
+        this.destination});
 
   CustomerOrders.fromJson(Map<String, dynamic> json) {
     if (json['order_appointments'] != null) {
@@ -55,7 +58,6 @@ class CustomerOrders {
         orderAppointments!.add(new OrderAppointments.fromJson(v));
       });
     }
-    //quotationAmount = json['quotation_amount'];
     navRouteId = json['nav_route_id'];
     order = json['order'] != null ? new Order.fromJson(json['order']) : null;
     csLocation = json['cs_location'] != null
@@ -69,6 +71,11 @@ class CustomerOrders {
     timeZoneId = json['timeZoneId'];
     timeZoneName = json['timeZoneName'];
     tzShortForm = json['tz_short_form'];
+    origin =
+    json['origin'] != null ? new Origin.fromJson(json['origin']) : null;
+    destination = json['destination'] != null
+        ? new Origin.fromJson(json['destination'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -77,7 +84,6 @@ class CustomerOrders {
       data['order_appointments'] =
           this.orderAppointments!.map((v) => v.toJson()).toList();
     }
-    //data['quotation_amount'] = this.quotationAmount;
     data['nav_route_id'] = this.navRouteId;
     if (this.order != null) {
       data['order'] = this.order!.toJson();
@@ -93,6 +99,73 @@ class CustomerOrders {
     data['timeZoneId'] = this.timeZoneId;
     data['timeZoneName'] = this.timeZoneName;
     data['tz_short_form'] = this.tzShortForm;
+    if (this.origin != null) {
+      data['origin'] = this.origin!.toJson();
+    }
+    if (this.destination != null) {
+      data['destination'] = this.destination!.toJson();
+    }
+    return data;
+  }
+}
+
+class Origin {
+  String? id;
+  String? name;
+  String? lType;
+  LAddress? lAddress;
+  String? timeZoneId;
+  String? timeZoneName;
+  String? locationCode;
+  String? companyName;
+  String? typeOfLoc;
+  String? status;
+  String? levelOfService;
+
+  Origin(
+      {this.id,
+        this.name,
+        this.lType,
+        this.lAddress,
+        this.timeZoneId,
+        this.timeZoneName,
+        this.locationCode,
+        this.companyName,
+        this.typeOfLoc,
+        this.status,
+        this.levelOfService});
+
+  Origin.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    lType = json['l_type'];
+    lAddress = json['l_address'] != null
+        ? new LAddress.fromJson(json['l_address'])
+        : null;
+    timeZoneId = json['timeZoneId'];
+    timeZoneName = json['timeZoneName'];
+    locationCode = json['location_code'];
+    companyName = json['company_name'];
+    typeOfLoc = json['type_of_loc'];
+    status = json['status'];
+    levelOfService = json['level_of_service'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['l_type'] = this.lType;
+    if (this.lAddress != null) {
+      data['l_address'] = this.lAddress!.toJson();
+    }
+    data['timeZoneId'] = this.timeZoneId;
+    data['timeZoneName'] = this.timeZoneName;
+    data['location_code'] = this.locationCode;
+    data['company_name'] = this.companyName;
+    data['type_of_loc'] = this.typeOfLoc;
+    data['status'] = this.status;
+    data['level_of_service'] = this.levelOfService;
     return data;
   }
 }
@@ -335,41 +408,45 @@ class CsLocation {
 }
 
 class LAddress {
+  String? sId;
   String? addressLine1;
   String? addressLine2;
+  String? zipcode;
   String? city;
   String? state;
   String? country;
-  String? zipcode;
   List<double>? coordinates;
 
   LAddress(
-      {this.addressLine1,
+      {this.sId,
+        this.addressLine1,
         this.addressLine2,
+        this.zipcode,
         this.city,
         this.state,
         this.country,
-        this.zipcode,
         this.coordinates});
 
   LAddress.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
     addressLine1 = json['address_line1'];
     addressLine2 = json['address_line2'];
+    zipcode = json['zipcode'];
     city = json['city'];
     state = json['state'];
     country = json['country'];
-    zipcode = json['zipcode'];
     coordinates = json['coordinates'].cast<double>();
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['_id'] = this.sId;
     data['address_line1'] = this.addressLine1;
     data['address_line2'] = this.addressLine2;
+    data['zipcode'] = this.zipcode;
     data['city'] = this.city;
     data['state'] = this.state;
     data['country'] = this.country;
-    data['zipcode'] = this.zipcode;
     data['coordinates'] = this.coordinates;
     return data;
   }

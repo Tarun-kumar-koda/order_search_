@@ -442,7 +442,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                   ),
                   Container(
                     padding: EdgeInsets.zero,
-                    child: tableView(ordersModel.order!, index, context),
+                    child: tableView(ordersModel.order!,ordersModel, index, context),
                   ),
                 ],
               )),
@@ -451,7 +451,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
     );
   }
 
-  Widget tableView(Order ordersModel, int index, BuildContext context) {
+  Widget tableView(Order ordersModel,CustomerOrders customerOrders, int index, BuildContext context) {
     OrderPicture? pictureObj;
     pictureObj = sessionManager.realm
         .query<OrderPicture>("orderNumber == '${ordersModel.customerOrderNumber ?? ""}'")
@@ -576,7 +576,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                       )
                     ],
                   ),
-                  PodImagesWidget(orderDetails: ordersModel, parentKey: homeKey),
+                  PodImagesWidget(orderDetails: ordersModel, parentKey: homeKey, customerOrders: customerOrders),
                 ],
               ),
             ),

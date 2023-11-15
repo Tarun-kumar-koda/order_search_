@@ -14,9 +14,10 @@ import '../../base_route.dart';
 
 class PodImagesWidget extends StatefulWidget {
   final Order orderDetails;
+  final CustomerOrders customerOrders;
   final GlobalKey parentKey;
 
-  const PodImagesWidget({super.key, required this.orderDetails, required this.parentKey});
+  const PodImagesWidget({super.key, required this.orderDetails, required this.parentKey, required this.customerOrders});
 
   @override
   State<PodImagesWidget> createState() => _PodImagesWidgetState();
@@ -28,7 +29,7 @@ class _PodImagesWidgetState extends BaseRoute<PodImagesWidget> {
   @override
   void initState() {
     // imagePickerController = Get.put(ImagePickerController(orderDetails: widget.orderDetails));
-    imagePickerController =  ImagePickerController(orderDetails: widget.orderDetails);
+    imagePickerController =  ImagePickerController(orderDetails: widget.orderDetails, customerOrders: widget.customerOrders);
 imagePickerController.onInit();
     super.initState();
   }
