@@ -92,6 +92,7 @@ class EndPoint {
   final String UPDATE_ORDER_STATUS = "api/v2/customer_orders/update_orders_status";
 
   final String GLOBAL_SEARCH_ORDER = "api/v2/customer_orders/order_listing_details";
+  final String GET_WAREHOUSE_LIST = "api/v2/locations";
 }
 
 class Param {

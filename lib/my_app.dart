@@ -19,6 +19,7 @@ import 'package:toast/toast.dart';
 import 'Utils/app_enums.dart';
 import 'Utils/utils.dart';
 import 'routes/login_screen/view/login_page_new.dart';
+import 'routes/profile_screen/view/profile_view.dart';
 import 'routes/splash_screen/view/splash_screen_view.dart';
 
 class MyApp extends StatefulWidget {
@@ -128,6 +129,11 @@ class _MyAppState extends State<MyApp> {
     GetPage(
         name: AppLinks.searchOrderView,
         page: () => ScannedOrderListView(),
+        transition: appTransition,
+        transitionDuration: transitionDuration),
+    GetPage(
+        name: AppLinks.profileNamedRoute,
+        page: () => ProfileView(),
         transition: appTransition,
         transitionDuration: transitionDuration),
   ];

@@ -16,12 +16,13 @@ import 'package:order_search/entity/parent_responce.dart';
 import 'package:order_search/realm/order_picture.dart';
 import 'package:order_search/routes/base_route.dart';
 import 'package:order_search/routes/ware_house_scan/model/warehouse_ids.dart';
+import 'package:order_search/routes/ware_house_scan/model/warehouse_response_model.dart';
 import 'package:order_search/services/session_manager.dart';
 import 'package:realm/realm.dart';
 
 import '../../../model/global_search_order.dart';
 
-class WareHouseHomeController extends GetxController with AppData {
+class WareHouseHomeController extends GetxController {
   NetworkUtil networkUtil = NetworkUtil();
   SessionManager sessionManager = SessionManager().getInstance();
   TextEditingController selectFilterController = TextEditingController();
@@ -31,6 +32,7 @@ class WareHouseHomeController extends GetxController with AppData {
   var userId, accessToken, refreshToken;
   var message = "".obs;
   var orderList = <CustomerOrders>[].obs;
+  var whLocList = <Locations>[].obs;
   var parentRes = ParentResp().obs;
   var currentWarehouseName = "".obs;
   var isCameraPermissionGranted = false.obs;
@@ -57,12 +59,11 @@ class WareHouseHomeController extends GetxController with AppData {
   late WarehouseId selectedWarehouse;
 
   late OrderPicture? pictureObj;
+  var isApiCompleted = false.obs;
 
-  // late StreamSubscription<RealmListChanges<OrderPicture>> listen;
-
-  List<WarehouseId> warehouseIds = [WarehouseId(name: "choose a warehouse"),WarehouseId(name: "AUSTIN",id: "62b59902822dd6839e8ddbbf"),
-  WarehouseId(name: "SAN ANTONIO",id: "62b59998822dd6aed18ab8c5"),
-  WarehouseId(name: "QA Warehouse",id: "643feaee822dd6af9754a33d")];
+  // List<WarehouseId> warehouseIds = [WarehouseId(name: "choose a warehouse"),WarehouseId(name: "AUSTIN",id: "62b59902822dd6839e8ddbbf"),
+  // WarehouseId(name: "SAN ANTONIO",id: "62b59998822dd6aed18ab8c5"),
+  // WarehouseId(name: "QA Warehouse",id: "643feaee822dd6af9754a33d")];
 
   @override
   void onInit() {
@@ -79,6 +80,7 @@ class WareHouseHomeController extends GetxController with AppData {
   @override
   void onReady() {
     super.onReady();
+    getWarehouseList();
   }
 
   // initiateListener(){
@@ -174,6 +176,55 @@ class WareHouseHomeController extends GetxController with AppData {
       ApiConstant.param.GRANT_TYPE: "refresh_token",
     };
     return body;
+  }
+
+  Future getWarehouseList() async {
+    Utils.checkNetworkStatus().then((value) async {
+      if(value){
+        isApiCompleted.value = false;
+        Utils.showLoadingDialog();
+        String orgId = (await sessionManager.getOrgIds()).first;
+        try {
+          var res = await NetworkUtil().getDio("${ApiConstant.endPoint.GET_WAREHOUSE_LIST}", "Warehouse List",
+            headers: ApiConstant().getHeaders(await sessionManager.getAccessToken()),
+            body: {
+              "page":1,
+              "location_type":"WH",
+              "operation_code":"WHI",
+              "skip_wh_check":true,
+              "org_id": orgId
+            },
+          );
+
+          isApiCompleted.value = true;
+          Utils.hideLoadingDialog();
+          if (res != null) {
+            if (res.statusCode == 200) {
+              WarehouseResponseModel warehouseResponseModel = WarehouseResponseModel.fromJson(res.data);
+              if (warehouseResponseModel.locations != null &&
+                  warehouseResponseModel.locations!.isNotEmpty) {
+                whLocList.value = warehouseResponseModel.locations!;
+              }
+            } else if (res.statusCode == 401) {
+
+            } else if (res.data["errors"] != null) {
+              var errorMessage = res.data["errors"] as List<dynamic>;
+              if (errorMessage.isNotEmpty) {
+                Utils.showAlertDialog(res.data["errors"][0]);
+              }
+            } else {
+              Utils.showAlertDialog("Unable to fetch data.");
+            }
+          }
+
+        } catch (ex) {
+          throw Exception();
+        }
+      }else{
+        isApiCompleted.value = true;
+        Utils.showAlertDialog(AppConstant.networkNotConnected);
+      }
+    });
   }
 
   // fetchImagesFromDb(ScannedCustomerDetails orderDetails){

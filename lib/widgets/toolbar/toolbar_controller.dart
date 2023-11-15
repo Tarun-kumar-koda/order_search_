@@ -80,18 +80,4 @@ class ToolBarController extends GetxController with AppData{
       });
     }
   }
-
-  // callException(){
-  //   try{
-  //     excc();
-  //   }catch(ex,stack){
-  //     print(ex);
-  //     // print(stack);
-  //   }
-  // }
-  //
-  // excc(){
-  //   throw Exception("exception test");
-  // }
-
 }

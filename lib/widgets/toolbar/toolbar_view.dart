@@ -139,13 +139,32 @@ class _ToolBarViewState extends BaseRoute<ToolBarView> with AppData, SingleTicke
                               opticalSize: 1,
                             ),
                           ),
-                        )
+                        ),
                     // Container(
                     //   // padding: EdgeInsets.symmetric(horizontal: getMediaQueryWidth(context, 0.03), vertical: getMediaQueryWidth(context, 0.01)),
                     //   decoration:
                     //   BoxDecoration(color: Colors.white24,),
                     //   child: Icon(Icons.check_circle,color: Colors.green,),
                     // ).marginZero.paddingZero
+
+                    GestureDetector(
+                      onTap: () {
+                        Get.toNamed(AppLinks.profileNamedRoute);
+                      },
+                      child: Container(
+                        margin: EdgeInsets.only(left: getMediaQueryWidth(context, 0.03)),
+                        child: toolBarController.isImageLoaded.value
+                            ? CircleAvatar(
+                          radius: getMediaQueryWidth(context, 0.05),
+                          backgroundImage: NetworkImage(toolBarController.imgUrl.value),
+                        )
+                            : Image.asset(
+                          AppConstant.profileImage,
+                          width: MediaQuery.of(context).size.width * 0.09,
+                          height: MediaQuery.of(context).size.height * 0.09,
+                        ),
+                      ),
+                    )
                   ],
                 ),
               ))),
