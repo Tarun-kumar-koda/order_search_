@@ -21,7 +21,7 @@ class OfflineHelper with AppData {
 
   late PicturesQueue picturesQueue;
 
-  var period = const Duration(seconds: 5);
+  var period = const Duration(seconds: 20);
 
   bool isQueueBusy = false;
 
