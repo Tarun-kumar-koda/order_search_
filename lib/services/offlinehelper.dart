@@ -15,6 +15,8 @@ class OfflineHelper with AppData {
 
   OfflineHelper._internal();
 
+  num queueCallerCount = 0;
+
   factory OfflineHelper() {
     return _singleton;
   }
@@ -46,6 +48,12 @@ class OfflineHelper with AppData {
 
   initPeriodicCaller() {
     Timer.periodic(period, (arg) async {
+      try{
+        print("queue Caller Count: ${++queueCallerCount}");
+      }catch(_,__){
+        print("queue count reset");
+        queueCallerCount = 0;
+      }
       print('pending pictures -> ${picturesQueue.queue.length}');
       print("queue isBusy: $isQueueBusy");
       if (picturesQueue.queue.isNotEmpty) triggerQueue();

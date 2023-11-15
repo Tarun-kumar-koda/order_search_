@@ -18,14 +18,14 @@ import '../controller/scan_ware_house_controller.dart';
 
 class PodImagesWidget extends StatefulWidget {
   final Order orderDetails;
-  final CustomerOrders customerOrders;
+  // final CustomerOrders customerOrders;
   final GlobalKey parentKey;
   final int widgetIndex;
 
   // final PicturesQueue picturesQueue;
 
   // const PodImagesWidget({super.key, required this.orderDetails, required this.parentKey, required this.widgetIndex});
-  const PodImagesWidget({super.key, required this.orderDetails, required this.parentKey, required this.customerOrders});
+  const PodImagesWidget({super.key, required this.orderDetails, required this.parentKey, required this.widgetIndex});
 
   @override
   State<PodImagesWidget> createState() => _PodImagesWidgetState();
@@ -41,7 +41,7 @@ class _PodImagesWidgetState extends BaseRoute<PodImagesWidget> {
   @override
   void initState() {
     // imagePickerController = Get.put(ImagePickerController(orderDetails: widget.orderDetails));
-    imagePickerController =  ImagePickerController(orderDetails: widget.orderDetails, customerOrders: widget.customerOrders);
+    imagePickerController =  ImagePickerController(orderDetails: widget.orderDetails);
 imagePickerController.onInit();
     super.initState();
   }
@@ -164,7 +164,7 @@ imagePickerController.onInit();
                               MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
                           backgroundColor: !Utils.isEmpty(imagePickerController.orderDetails.localPath) &&
                                   !imagePickerController.orderDetails.isOnlineSync!
-                              ? MaterialStateProperty.all<Color>(Utils.hexColor(AppColor.appPrimaryColor))
+                              ? MaterialStateProperty.all<Color>(Colors.indigo)
                               : MaterialStateProperty.all<Color>(Colors.grey),
                           // backgroundColor:  MaterialStateProperty.all<Color>(Utils.hexColor(AppColor.appPrimaryColor)),
                         ),

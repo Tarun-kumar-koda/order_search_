@@ -5,14 +5,12 @@ import 'package:order_search/realm/order_picture.dart';
 import 'package:order_search/routes/base_route.dart';
 import 'package:order_search/services/offlinehelper.dart';
 import 'package:order_search/widgets/toolbar/toolbar_controller.dart';
-import 'package:realm/realm.dart';
 
 import '../../Utils/logger.dart';
 import '../../Utils/network_util.dart';
 import '../../Utils/utils.dart';
 import '../../constant/api_constant.dart';
 import '../../constant/app_constant.dart';
-import '../../entity/scanned_customer_details.dart';
 import '../../model/global_search_order.dart';
 import '../../my_app.dart';
 import 'file_manager.dart';
@@ -29,8 +27,6 @@ class ImagePickerController extends GetxController with AppData {
   late PicturesQueue picturesQueue;
 
   // late Rx<OrderPicture?> pictureObj;
-
-  late StreamSubscription<RealmListChanges<OrderPicture>> listen;
 
   late Order orderDetails;
   late CustomerOrders customerOrders;
@@ -52,16 +48,6 @@ class ImagePickerController extends GetxController with AppData {
     // _initiateListener();
     checkEditable();
     super.onInit();
-  }
-
-  _initiateListener(){
-    listen = picturesQueue.queue.changes.listen((event) {
-      print("&&&${event.list.length}");
-    });
-
-    listen.onData((data) {
-      print(data.inserted);
-    });
   }
 
   void fetch() async {
@@ -114,8 +100,12 @@ class ImagePickerController extends GetxController with AppData {
     PICK_IMAGE? mode;
     await showModalBottomSheet(
       context: context,
+      // anchorPoint: Offset(0, 2),
+      // enableDrag: true,
+      showDragHandle: true,
+      useSafeArea: true,
       builder: (context) {
-        return Container(
+        return SizedBox(
           height: mqH * 0.15,
           child: Column(
             children: [
@@ -145,67 +135,6 @@ class ImagePickerController extends GetxController with AppData {
           ),
         );
       },
-    );
-    return mode;
-  }
-
-  Future<PICK_IMAGE?> showCameraRequestPermission() async {
-    PICK_IMAGE? mode;
-    await showDialog(
-      builder: (context) => Container(
-        width: double.infinity,
-        child: Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          alignment: AlignmentDirectional.bottomCenter,
-          child: Container(
-            padding: const EdgeInsets.all(50),
-            child: Row(children: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  OutlinedButton(
-                      style: ButtonStyle(
-                          shape: MaterialStatePropertyAll(CircleBorder()),
-                          fixedSize: MaterialStatePropertyAll(Size(50, 50))),
-                      onPressed: () {
-                        mode = PICK_IMAGE.GALLERY;
-                        Get.back();
-                        return;
-                      },
-                      child: const Icon(
-                        Icons.image,
-                        color: Colors.black,
-                      )),
-                  const Text("Gallery")
-                ],
-              ),
-              const Spacer(
-                flex: 1,
-              ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  OutlinedButton(
-                      style: ButtonStyle(
-                          shape: MaterialStatePropertyAll(CircleBorder()),
-                          fixedSize: MaterialStatePropertyAll(Size(50, 50))),
-                      onPressed: () {
-                        mode = PICK_IMAGE.CAMERA;
-                        Get.back();
-                        return;
-                      },
-                      child: const Icon(
-                        Icons.camera_alt_sharp,
-                        color: Colors.black,
-                      )),
-                  const Text("Camera")
-                ],
-              ),
-            ]),
-          ),
-        ),
-      ),
-      context: MyApp.navigatorKey.currentState!.overlay!.context,
     );
     return mode;
   }
@@ -270,6 +199,7 @@ class ImagePickerController extends GetxController with AppData {
     } catch (ex, stackTrace) {
       Logger.logMessenger(
           msgTitle: AppLinks.OrderDetailsNamedRoute, msgBody: {"Exception": ex, "res": res});
+      // ignore: avoid_print
       print(stackTrace);
       return false;
     }
@@ -286,7 +216,7 @@ class ImagePickerController extends GetxController with AppData {
       // setState(() {
         orderDetails.isOnlineSync = true;
       // });
-
+      OfflineHelper().triggerQueue();
     }
   }
 }

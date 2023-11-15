@@ -11,6 +11,7 @@ import 'package:order_search/my_app.dart';
 import 'package:order_search/routes/base_route.dart';
 import 'package:order_search/routes/ware_house_scan/view/pod_images_widget.dart';
 import 'package:order_search/services/session_manager.dart';
+import 'package:order_search/widgets/pod_images_widget/file_manager.dart';
 import 'package:order_search/widgets/toolbar/toolbar_view.dart';
 import '../../../model/global_search_order.dart';
 import '../../../realm/order_picture.dart';
@@ -62,11 +63,11 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
             SizedBox(
               height: getMediaQueryHeight(context, 0.001),
             ),
-            Container(
-              color: const Color(0xFFE0E0E0),
-              width: getMediaQueryWidth(context, 1),
-              height: 3,
-            ),
+            // Container(
+            //   color: const Color(0xFFE0E0E0),
+            //   width: getMediaQueryWidth(context, 1),
+            //   height: 1.5,
+            // ),
             Container(
               padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 8.0),
               width: getMediaQueryWidth(context, 1),
@@ -81,8 +82,8 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                       ),
                       boxShadow: [
                         BoxShadow(
-                          offset: Offset(0, 1),
-                          blurRadius: 5,
+                          offset: Offset(2, 3),
+                          blurRadius: 3,
                           spreadRadius: 2,
                           color: Colors.black26,
                         ),
@@ -105,7 +106,10 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
             ),
             Expanded(
               child: Obx(() => searchOrderListWidget(context)),
-            )
+            ),
+            // ElevatedButton(onPressed: (){
+            //   showCameraRequestPermissionBottomSheet(context);
+            // }, child: Text("permission"))
           ],
         )),
       ),
@@ -441,7 +445,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                   ),
                   Container(
                     padding: EdgeInsets.zero,
-                    child: tableView(ordersModel.order!,ordersModel, index, context),
+                    child: tableView(ordersModel.order!, index, context),
                   ),
                 ],
               )),
@@ -575,7 +579,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                       )
                     ],
                   ),
-                  PodImagesWidget(key: Key(ordersModel.id!),orderDetails: ordersModel, parentKey: homeKey,widgetIndex: index),
+                  PodImagesWidget(key: Key(ordersModel.id!),orderDetails: ordersModel, parentKey: homeKey,widgetIndex: index,),
                   // PodImagesWidget(orderDetails: ordersModel, parentKey: homeKey, customerOrders: customerOrders),
 
                   // ElevatedButton(onPressed: (){
@@ -613,7 +617,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                   //             style: TextStyle(color: Colors.white, fontSize: getMediaQueryWidth(context, 0.04)),
                   //           )
                   //         ]))),
-                  PodImagesWidget(orderDetails: ordersModel, parentKey: homeKey, customerOrders: customerOrders),
+                  // PodImagesWidget(orderDetails: ordersModel, parentKey: homeKey, customerOrders: customerOrders),
                 ],
               ),
             ),
@@ -622,4 +626,5 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
       ),
     );
   }
+
 }

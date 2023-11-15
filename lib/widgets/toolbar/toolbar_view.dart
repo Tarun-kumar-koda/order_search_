@@ -63,11 +63,9 @@ class _ToolBarViewState extends BaseRoute<ToolBarView> with AppData, SingleTicke
                 // Utils.hexColor(AppColor.appPrimaryColor),
               ],
             ),
-            border: Border.all(color: Colors.grey.shade400, width: 2, style: BorderStyle.solid, strokeAlign: BorderSide.strokeAlignOutside),
+            // border: Border.all(color: Colors.grey.shade400, width: 2, style: BorderStyle.solid, strokeAlign: BorderSide.strokeAlignOutside),
             borderRadius: BorderRadius.circular(40),
-            boxShadow: [
-              // BoxShadow(offset: Offset(6, 5), color: Colors.grey.withOpacity(0.25), blurRadius: 8, spreadRadius: 4),
-            ]),
+        ),
         margin: EdgeInsets.only(top: getMediaQueryHeight(context, 0.015), bottom: getMediaQueryHeight(context, 0.01)),
         height: getMediaQueryHeight(context, 0.07),
         width: getMediaQueryWidth(context, 0.98),

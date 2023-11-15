@@ -9,6 +9,7 @@ import 'package:order_search/constant/app_constant.dart';
 import 'package:order_search/routes/base_route.dart';
 import 'package:order_search/routes/profile_screen/controller/profile_controller.dart';
 import 'package:order_search/services/session_manager.dart';
+import 'package:order_search/widgets/pod_images_widget/file_manager.dart';
 
 class ProfileView extends StatefulWidget {
   @override
@@ -23,22 +24,27 @@ class _ProfileViewState extends BaseRoute<ProfileView> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Obx(
-            () => Column(
-              children: [
-                profileToolBar(),
-                profileImage(),
-                //changeProfilePhoto(),
-                employeeCode(),
-                userDetailsWidget(),
-                SizedBox(
-                  height: getMediaQueryHeight(context, 0.2),
-                ),
-                versionInfo(),
-                buttonView(),
-                // logOutButton(),
-              ],
+        child: GestureDetector(
+          onTap: (){
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: SingleChildScrollView(
+            child: Obx(
+              () => Column(
+                children: [
+                  profileToolBar(),
+                  profileImage(),
+                  //changeProfilePhoto(),
+                  employeeCode(),
+                  userDetailsWidget(),
+                  SizedBox(
+                    height: getMediaQueryHeight(context, 0.2),
+                  ),
+                  versionInfo(),
+                  buttonView(),
+                  // logOutButton(),
+                ],
+              ),
             ),
           ),
         ),
@@ -47,6 +53,7 @@ class _ProfileViewState extends BaseRoute<ProfileView> {
   }
 
   Widget profileToolBar() {
+    print("toolbar build");
     return Container(
       margin: EdgeInsets.only(left: getMediaQueryHeight(context, 0.01), right: getMediaQueryHeight(context, 0.01)),
       child: Row(
@@ -132,14 +139,14 @@ class _ProfileViewState extends BaseRoute<ProfileView> {
                                   fit: BoxFit.fill,
                                 )
                               : Container(
-                                  decoration: BoxDecoration(
+                                  decoration: const BoxDecoration(
                                       shape: BoxShape.circle,
                                       image: DecorationImage(
                                         fit: BoxFit.fill,
                                         image: AssetImage('assets/images/account_profile.png'),
                                       )))
                           : Container(
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                   shape: BoxShape.circle,
                                   image: DecorationImage(
                                     fit: BoxFit.fill,
@@ -164,40 +171,58 @@ class _ProfileViewState extends BaseRoute<ProfileView> {
                   icon: Icon(Icons.edit),
                   color: Colors.white,
                   onPressed: () {
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (context) {
-                        return Container(
-                          height: 150,
-                          child: Column(
-                            children: [
-                              ListTile(
-                                leading: Icon(Icons.camera_alt),
-                                title: Text('Take a picture'),
-                                onTap: () async {
-                                  _pickImage(ImageSource.camera);
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                              ListTile(
-                                leading: Icon(Icons.image),
-                                title: Text('Choose from gallery'),
-                                onTap: () async {
-                                  _pickImage(ImageSource.gallery);
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    );
+                    showCameraRequestPermissionBottomSheet(context);
                   },
                 ),
               ),
             ))
       ],
     );
+  }
+
+  Future<PICK_IMAGE?> showCameraRequestPermissionBottomSheet(BuildContext context) async {
+    double mqH = context.mediaQuery.size.height;
+    double mqW = context.mediaQuery.size.width;
+    PICK_IMAGE? mode;
+    await showModalBottomSheet(
+      context: context,
+      // anchorPoint: Offset(0, 2),
+      // enableDrag: true,
+      showDragHandle: true,
+      useSafeArea: true,
+      builder: (context) {
+        return SizedBox(
+          height: mqH * 0.15,
+          child: Column(
+            children: [
+              ListTile(
+                visualDensity: VisualDensity.comfortable,
+                leading: Icon(Icons.camera_alt, size: mqW * 0.06),
+                title: Text(
+                  'Take a picture',
+                  style: TextStyle(fontSize: mqW * 0.05),
+                ),
+                onTap: () async {
+                  mode = PICK_IMAGE.CAMERA;
+                  Get.back();
+                  return;
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.image, size: mqW * 0.06),
+                title: Text('Choose from gallery', style: TextStyle(fontSize: mqW * 0.05)),
+                onTap: () async {
+                  mode = PICK_IMAGE.GALLERY;
+                  Get.back();
+                  return;
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+    return mode;
   }
 
   Widget changeProfilePhoto() {
@@ -298,8 +323,9 @@ class _ProfileViewState extends BaseRoute<ProfileView> {
           TextField(
             controller: profileController.mobileController,
             style: TextStyle(fontSize: getMediaQueryWidth(context, 0.04)),
-            enabled: false,
-            decoration: InputDecoration(
+            // enabled: false,
+            readOnly: true,
+            decoration: const InputDecoration(
               contentPadding: EdgeInsets.all(0),
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.grey),

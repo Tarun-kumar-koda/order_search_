@@ -24,19 +24,22 @@ import 'routes/splash_screen/view/splash_screen_view.dart';
 
 class MyApp extends StatefulWidget {
   static final navigatorKey = GlobalKey<NavigatorState>();
+  // static late SingleTickerProviderStateMixin currentState;
 
   @override
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin{
   ConnectivityResult _connectionStatus = ConnectivityResult.none;
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
+
   @override
   void initState() {
     super.initState();
+    // MyApp.currentState = this;
     // OfflineHelper.startQueue();
     // DatabaseHelper().realm.all<PicturesQueue>().first.queue.changes.listen((event) {
     //   print("&&&${event}");
