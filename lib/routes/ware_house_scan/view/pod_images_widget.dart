@@ -18,12 +18,14 @@ import '../controller/scan_ware_house_controller.dart';
 
 class PodImagesWidget extends StatefulWidget {
   final Order orderDetails;
+  final CustomerOrders customerOrders;
   final GlobalKey parentKey;
   final int widgetIndex;
 
   // final PicturesQueue picturesQueue;
 
-  const PodImagesWidget({super.key, required this.orderDetails, required this.parentKey, required this.widgetIndex});
+  // const PodImagesWidget({super.key, required this.orderDetails, required this.parentKey, required this.widgetIndex});
+  const PodImagesWidget({super.key, required this.orderDetails, required this.parentKey, required this.customerOrders});
 
   @override
   State<PodImagesWidget> createState() => _PodImagesWidgetState();
@@ -39,13 +41,8 @@ class _PodImagesWidgetState extends BaseRoute<PodImagesWidget> {
   @override
   void initState() {
     // imagePickerController = Get.put(ImagePickerController(orderDetails: widget.orderDetails));
-    imagePickerController = ImagePickerController(
-      orderDetails: widget.orderDetails,
-    );
-    imagePickerController.onInit();
-    // toolBarController.pictures.listen((p0) {
-    //   print("listener");
-    // });
+    imagePickerController =  ImagePickerController(orderDetails: widget.orderDetails, customerOrders: widget.customerOrders);
+imagePickerController.onInit();
     super.initState();
   }
 
@@ -153,11 +150,6 @@ class _PodImagesWidgetState extends BaseRoute<PodImagesWidget> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // ElevatedButton(onPressed: (){
-                //   print('len');
-                //   print(imagePickerController.picturesQueue.queue.length);
-                //
-                // }, child: Text("test listener")),
                 SizedBox(
                     width: getMediaQueryWidth(context, 0.28),
                     child: ElevatedButton(

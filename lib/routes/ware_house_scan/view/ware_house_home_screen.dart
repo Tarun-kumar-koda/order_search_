@@ -441,7 +441,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                   ),
                   Container(
                     padding: EdgeInsets.zero,
-                    child: tableView(ordersModel.order!, index, context),
+                    child: tableView(ordersModel.order!,ordersModel, index, context),
                   ),
                 ],
               )),
@@ -451,6 +451,10 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
   }
 
   Widget tableView(Order ordersModel, int index, BuildContext context) {
+    OrderPicture? pictureObj;
+    pictureObj = sessionManager.realm
+        .query<OrderPicture>("orderNumber == '${ordersModel.customerOrderNumber ?? ""}'")
+        .firstOrNull;
 
     return Container(
       decoration: const BoxDecoration(
@@ -466,7 +470,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                 left: getMediaQueryWidth(context, 0.025),
               ),
               width: getMediaQueryWidth(context, 0.95),
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10), bottomRight: Radius.circular(10))),
               child: Column(
@@ -572,6 +576,8 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                     ],
                   ),
                   PodImagesWidget(key: Key(ordersModel.id!),orderDetails: ordersModel, parentKey: homeKey,widgetIndex: index),
+                  // PodImagesWidget(orderDetails: ordersModel, parentKey: homeKey, customerOrders: customerOrders),
+
                   // ElevatedButton(onPressed: (){
                   //   OrderPicture? op = sessionManager.realm.query<OrderPicture>("orderNumber == '${homeController.orderList.first.orderNumber}'").firstOrNull;
                   //   print(op?.localPath);
@@ -607,6 +613,7 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
                   //             style: TextStyle(color: Colors.white, fontSize: getMediaQueryWidth(context, 0.04)),
                   //           )
                   //         ]))),
+                  PodImagesWidget(orderDetails: ordersModel, parentKey: homeKey, customerOrders: customerOrders),
                 ],
               ),
             ),
@@ -614,195 +621,5 @@ class _ScannedOrderListViewState extends BaseRoute<ScannedOrderListView> with Wi
         ],
       ),
     );
-  }
-
-  // Widget getPodWidget(int index, Order ordersModel, GlobalKey homeKey){
-  //
-  // }
-
-  void overRideWHDock(String? orderNumber) {
-    Platform.isAndroid
-        ? showDialog(
-            builder: (context) => SizedBox(
-              width: double.infinity,
-              child: AlertDialog(
-                titlePadding: EdgeInsets.only(
-                    left: MediaQuery.of(context).size.width * 0.06,
-                    top: MediaQuery.of(context).size.width * 0.06,
-                    right: MediaQuery.of(context).size.width * 0.02),
-                contentPadding: EdgeInsets.only(
-                    left: MediaQuery.of(context).size.width * 0.06,
-                    top: MediaQuery.of(context).size.width * 0.02,
-                    right: MediaQuery.of(context).size.width * 0.04),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                title: Text(
-                  'Fleet Enable',
-                  style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.05),
-                ),
-                content: Text(
-                  "Are you sure, you want to Override all the Items WareHouse Locations?",
-                  style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04),
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(false),
-                    child: const Text("No"),
-                  ),
-                  TextButton(onPressed: () {}, child: const Text("Yes")),
-                ],
-              ),
-            ),
-            context: MyApp.navigatorKey.currentState!.overlay!.context,
-          )
-        : showDialog(
-            context: MyApp.navigatorKey.currentState!.overlay!.context,
-            builder: (BuildContext context) => CupertinoAlertDialog(
-                  title: Text(
-                    'Fleet Enable',
-                    style: TextStyle(
-                        fontSize: MediaQuery.of(MyApp.navigatorKey.currentState!.overlay!.context).size.width * 0.05),
-                  ),
-                  content: Text(
-                    "Are you sure, you want to Override all the Items WareHouse Locations?",
-                    style: TextStyle(
-                        fontSize: MediaQuery.of(MyApp.navigatorKey.currentState!.overlay!.context).size.width * 0.04),
-                  ),
-                  actions: <Widget>[
-                    CupertinoDialogAction(
-                      onPressed: () {
-                        Get.back();
-                      },
-                      isDefaultAction: true,
-                      child: Text(
-                        "No",
-                        style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04),
-                      ),
-                    ),
-                  ],
-                ));
-  }
-
-  List<Widget> startUnloadButton() {
-    var truckAdded = homeController.wareHouseTruckNumText.text;
-    if (kDebugMode) {
-      print(' inside startUnloadButton');
-    }
-    return [
-      Container(
-          alignment: Alignment.center,
-          child: Tooltip(
-            // width: getMediaQueryWidth(context, 0.97),
-            // height: getMediaQueryWidth(context, 0.22),
-            // margin: EdgeInsets.only(right: 150),
-            // alignment: Alignment.center,
-            message: Utils.isEmpty(truckAdded) ? "Unloading Truck $truckAdded" : "",
-            child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  //                  width: getMediaQueryWidth(context, 0.97),
-                  //  height: getMediaQueryWidth(context, 0.22),
-                  //fixedSize: MaterialStateProperty.all(Size(0.22, 0.22)),
-                  shape: const CircleBorder(),
-                  padding: const EdgeInsets.all(20),
-                  //     MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(7)),
-                  backgroundColor:
-                      (truckAdded == "") ? Utils.hexColor('#03C04A') : Utils.hexColor('#FF5733'),
-                  // homeController
-                  //         .isAnyOrderCheck(homeController.scannedOrderList.value)
-                  //  ?
-                  //     MaterialStateProperty.all<Color>(
-                  //   truckAdded != ""
-                  //       ? Utils.hexColor('#03C04A')
-                  //       : Utils.hexColor('#FF3131'),
-                  // )
-                  // : MaterialStateProperty.all<Color>(
-                  //     (Utils.hexColor(AppColor.swipe_btn_bg)))
-                ),
-                onPressed: () async {},
-                child: Text(
-                  truckAdded == "" ? "Start\nUnload" : "Finish\nUnload",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Colors.white,
-                      // homeController.isAnyOrderCheck(
-                      //         homeController.scannedOrderList.value)
-                      //     ? Colors.white
-                      //     : Color(0xFF757575),
-                      fontSize: getMediaQueryWidth(context, 0.045)),
-                )),
-          ))
-    ];
-  }
-
-  void resetButtonAction() {
-    Platform.isAndroid
-        ? showDialog(
-            builder: (context) => SizedBox(
-              width: double.infinity,
-              child: AlertDialog(
-                titlePadding: EdgeInsets.only(
-                    left: MediaQuery.of(context).size.width * 0.06,
-                    top: MediaQuery.of(context).size.width * 0.06,
-                    right: MediaQuery.of(context).size.width * 0.02),
-                contentPadding: EdgeInsets.only(
-                    left: MediaQuery.of(context).size.width * 0.06,
-                    top: MediaQuery.of(context).size.width * 0.02,
-                    right: MediaQuery.of(context).size.width * 0.04),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                title: Text(
-                  'Fleet Enable',
-                  style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.05),
-                ),
-                content: Text(
-                  "Are you sure, you want to clear all scanned orders from the list?",
-                  style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04),
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(false),
-                    child: const Text(AppConstant.cancelText),
-                  ),
-                  TextButton(onPressed: () {}, child: const Text("Reset")),
-                ],
-              ),
-            ),
-            context: MyApp.navigatorKey.currentState!.overlay!.context,
-          )
-        : showDialog(
-            context: MyApp.navigatorKey.currentState!.overlay!.context,
-            builder: (BuildContext context) => CupertinoAlertDialog(
-                  title: Text(
-                    'Fleet Enable',
-                    style: TextStyle(
-                        fontSize: MediaQuery.of(MyApp.navigatorKey.currentState!.overlay!.context).size.width * 0.05),
-                  ),
-                  content: Text(
-                    "Are you sure, you want to clear all scanned orders from the list?",
-                    style: TextStyle(
-                        fontSize: MediaQuery.of(MyApp.navigatorKey.currentState!.overlay!.context).size.width * 0.04),
-                  ),
-                  actions: <Widget>[
-                    CupertinoDialogAction(
-                      onPressed: () {
-                        Get.back();
-                      },
-                      isDefaultAction: true,
-                      child: Text(
-                        AppConstant.cancelText,
-                        style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04),
-                      ),
-                    ),
-                    CupertinoDialogAction(
-                        onPressed: () {},
-                        isDefaultAction: true,
-                        child: Text(
-                          "Reset",
-                          style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04),
-                        ))
-                  ],
-                ));
   }
 }
